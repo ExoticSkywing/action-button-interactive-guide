@@ -213,8 +213,19 @@ function renderStep(index: number, animate = true, announce = true) {
   stepTotal.textContent = String(steps.length);
   const complete = current === steps.length - 1;
   stepTitle.textContent = complete ? '随时使用“翻译”' : step.title;
-  stepBody.textContent = complete ? '长按侧面的操作按钮即可启动。' : step.body;
+  if (current === 0) {
+    const prefix = document.createTextNode('打开你 iPhone 上的');
+    const settingsIcon = document.createElement('img');
+    settingsIcon.className = 'hud-inline-settings-icon';
+    settingsIcon.src = '/media/rail-settings-apple.png';
+    settingsIcon.alt = '设置';
+    settingsIcon.draggable = false;
+    stepBody.replaceChildren(prefix, settingsIcon);
+  } else {
+    stepBody.textContent = complete ? '长按侧面的操作按钮即可启动。' : step.body;
+  }
   stepProof.textContent = step.hudProof;
+  stepProof.closest('.hud-proof')?.classList.toggle('hidden', current === 0);
   primaryAction.textContent = '重新开始';
   primaryAction.setAttribute('aria-label', primaryAction.textContent);
   window.clearTimeout(screenTransitionTimer);
@@ -224,6 +235,7 @@ function renderStep(index: number, animate = true, announce = true) {
   screen.classList.toggle('switching', shouldAnimate);
   screenTransitionTimer = window.setTimeout(() => {
     screen.replaceChildren(screenNodes[step.screen]);
+    screen.querySelector<HTMLElement>('.home-settings-target')?.classList.toggle('cue-active', !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     screen.classList.remove('switching');
     hud.classList.remove('updating');
     if (shouldAnimate && complete) {
@@ -318,6 +330,7 @@ function cancelActiveTransition() {
   hud.classList.remove('updating');
   document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
   screen.querySelector('.live-activity.confirming')?.classList.remove('confirming');
+  screen.querySelector('.home-settings-target.cue-active')?.classList.remove('cue-active');
   screen.replaceChildren(screenNodes[steps[current].screen]);
 }
 
@@ -345,6 +358,11 @@ document.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button) => 
   if (!suppressRailClick && railLearned) requestStep(Number(button.dataset.step));
   else if (!railLearned) status.textContent = '先完成左侧按钮的手势练习，教程会从第 1 步开始';
 }));
+screen.addEventListener('click', (event) => {
+  if (!(event.target instanceof Element) || !event.target.closest('.home-settings-target') || current !== 0 || mode !== 'expanded') return;
+  if (railLearned) requestStep(1);
+  else status.textContent = '先完成左侧按钮的手势练习，再点击屏幕上的“设置”';
+});
 let wheelLocked = false;
 railViewport.addEventListener('wheel', (event) => {
   if (wheelLocked || gesturePracticeLocked || Math.abs(event.deltaY) < 4) return;
@@ -429,6 +447,8 @@ function syncPreferredInput() {
 }
 coarsePointer.addEventListener?.('change', syncPreferredInput);
 anyCoarsePointer.addEventListener?.('change', syncPreferredInput);
+document.addEventListener('visibilitychange', () => viewer.toggleAttribute('data-page-hidden', document.hidden));
+viewer.toggleAttribute('data-page-hidden', document.hidden);
 syncRailCoachmark();
 syncModeAccessibility();
 renderStep(current, false, false);
