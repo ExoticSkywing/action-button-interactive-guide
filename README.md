@@ -114,6 +114,10 @@ WebGL = 0
 Video = 0
 React = 0
 背景持续动画 = 0
+空闲 HUD Beam 动画 = 0
+空闲命名 CSS 动画 = 0
+步骤反馈最长 = 460ms
+完成反馈最长 = 500ms
 ```
 
 Rail 的 Metal FX 使用离线 Animated WebP；`prefers-reduced-motion` 使用同源静态 PNG。静态背景不取样、不跟随，也不修改用户上传的手机屏幕内容。

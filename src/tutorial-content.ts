@@ -11,6 +11,7 @@ type TutorialStep = {
 
 const icons = {
   settings: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19 13.4v-2.8l-2-.7-.6-1.4.9-1.9-2-2-1.9.9-1.4-.6-.7-2H8.6l-.7 2-1.4.6-1.9-.9-2 2 .9 1.9-.6 1.4-2 .7v2.8l2 .7.6 1.4-.9 1.9 2 2 1.9-.9 1.4.6.7 2h2.8l.7-2 1.4-.6 1.9.9 2-2-.9-1.9.6-1.4 1.9-.7Z"/></svg>',
+  railSettings: '<img class="rail-icon-image" src="/media/rail-settings-apple.png" alt="" draggable="false">',
   action: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="4"/><path d="M9 7.5h6M9 11h6M9 14.5h3.5"/></svg>',
   translate: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 5.5h9M9 3.5v2M6 8.5c1.5 3.1 3.8 5.2 7 6.6M12.8 8.5c-1 2.5-3 4.7-6 6.7"/><path d="m14 19.5 3.1-8 3.4 8M15.2 16.5h4.1"/></svg>',
   complete: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 4.7 4.7L19.5 7"/></svg>',
@@ -27,7 +28,7 @@ const homeIcons = {
 };
 
 const steps: TutorialStep[] = [
-  { id: 'open-settings', label: '打开设置', title: '打开“设置”', body: '轻点主屏幕上的“设置”图标。', proof: '看到“设置”页面，即可继续。', hudProof: '看到“设置”页面', screen: 'settings', icon: icons.settings },
+  { id: 'open-settings', label: '打开设置', title: '打开“设置”', body: '轻点主屏幕上的“设置”图标。', proof: '看到“设置”页面，即可继续。', hudProof: '看到“设置”页面', screen: 'settings', icon: icons.railSettings },
   { id: 'choose-action', label: '选择操作按钮', title: '进入“操作按钮”', body: '在“设置”列表中轻点“操作按钮”。', proof: '页面标题显示“操作按钮”。', hudProof: '页面标题显示“操作按钮”', screen: 'action', icon: icons.action },
   { id: 'select-translate', label: '选择翻译', title: '选择“翻译”', body: '选择“翻译”，再确认使用的语言。', proof: '“翻译”显示为当前选中功能。', hudProof: '“翻译”显示为已选择', screen: 'translate', icon: icons.translate },
   { id: 'hold-to-finish', label: '长按完成', title: '长按操作按钮', body: '长按机身侧面的操作按钮，直到屏幕弹出提示。', proof: '看到“翻译已启动”，任务完成。', hudProof: '设置完成', screen: 'complete', icon: icons.complete },

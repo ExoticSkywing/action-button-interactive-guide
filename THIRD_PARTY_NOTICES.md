@@ -30,7 +30,7 @@ The stage ships two darkened, responsive derivative crops from this photograph: 
 - Package version: `1.4.0`
 - License: MIT
 
-The mobile HUD adapts the generated `md`, `dark`, `colorful` CSS engine without shipping React. It preserves the upstream stroke, inner glow, bloom, mask, palette, and hue cycle. Normal motion matches the official Main Large demo: 1.96s travel and strength 1. The HUD supplies its own 24px radius and 1px border. Reduced motion disables rotation and hue shift, hides bloom, and uses a static white/cyan edge.
+The mobile HUD adapts the generated `md`, `dark`, `colorful` CSS engine without shipping React. It preserves the upstream stroke, inner glow, bloom, mask, and palette at strength 1, but freezes the edge at 226deg and disables its perpetual rotation, hue shift, and fade animations to avoid continuous mobile rasterization. The HUD supplies its own 24px radius and 1px border. Reduced motion additionally hides bloom and uses a quieter static white/cyan edge.
 
 ## metal-fx
 

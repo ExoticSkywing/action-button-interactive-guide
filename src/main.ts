@@ -110,6 +110,8 @@ let mode: ViewerMode = 'expanded';
 let railLearned = localStorage.getItem(preferredRailInput() === 'touch' ? touchLearnedKey : wheelLearnedKey) === '1';
 let metalTransitionTimer = 0;
 let screenTransitionTimer = 0;
+let feedbackTransitionTimer = 0;
+let completionFeedbackTimer = 0;
 let stepTransitionTimer = 0;
 let stepTransitionLocked = false;
 let queuedStep: number | null = null;
@@ -190,15 +192,17 @@ function storedStep() {
 function renderStep(index: number, animate = true, announce = true) {
   const previous = current;
   current = Math.max(0, Math.min(steps.length - 1, index));
-  if (animate && current !== previous) playMetalTransition(current > previous ? 1 : -1);
+  const shouldAnimate = animate && current !== previous;
+  if (shouldAnimate) playMetalTransition(current > previous ? 1 : -1);
   const step = steps[current];
   viewer.dataset.currentStep = String(current);
   railTrack.style.setProperty('--rail-index', String(current));
-  hud.classList.toggle('updating', animate);
+  hud.classList.toggle('updating', shouldAnimate);
   hud.classList.toggle('is-complete', current === steps.length - 1);
   document.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button, buttonIndex) => {
     const selected = buttonIndex === current;
     button.classList.toggle('selected', selected);
+    button.classList.toggle('step-feedback', shouldAnimate && selected);
     button.classList.toggle('reflection-above', buttonIndex === current - 1);
     button.classList.toggle('reflection-below', buttonIndex === current + 1);
     button.setAttribute('aria-pressed', String(selected));
@@ -214,12 +218,32 @@ function renderStep(index: number, animate = true, announce = true) {
   primaryAction.textContent = '重新开始';
   primaryAction.setAttribute('aria-label', primaryAction.textContent);
   window.clearTimeout(screenTransitionTimer);
-  screen.classList.toggle('switching', animate);
+  window.clearTimeout(feedbackTransitionTimer);
+  window.clearTimeout(completionFeedbackTimer);
+  screen.querySelector('.live-activity.confirming')?.classList.remove('confirming');
+  screen.classList.toggle('switching', shouldAnimate);
   screenTransitionTimer = window.setTimeout(() => {
     screen.replaceChildren(screenNodes[step.screen]);
     screen.classList.remove('switching');
     hud.classList.remove('updating');
-  }, animate ? 120 : 0);
+    if (shouldAnimate && complete) {
+      const activity = screen.querySelector<HTMLElement>('.live-activity');
+      activity?.classList.add('confirming');
+      completionFeedbackTimer = window.setTimeout(() => {
+        activity?.classList.remove('confirming');
+        completionFeedbackTimer = 0;
+      }, 500);
+    }
+  }, shouldAnimate ? 120 : 0);
+  if (shouldAnimate) {
+    feedbackTransitionTimer = window.setTimeout(() => {
+      document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
+      feedbackTransitionTimer = 0;
+    }, 260);
+  } else {
+    hud.classList.remove('updating');
+    document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
+  }
   localStorage.setItem(storageKey, String(current));
   if (announce) status.textContent = `第 ${current + 1} 步：${step.title}。${step.proof}`;
 }
@@ -274,10 +298,14 @@ function cancelActiveTransition() {
   window.clearTimeout(stepTransitionTimer);
   window.clearTimeout(metalTransitionTimer);
   window.clearTimeout(screenTransitionTimer);
+  window.clearTimeout(feedbackTransitionTimer);
+  window.clearTimeout(completionFeedbackTimer);
   window.clearTimeout(gesturePracticeTimer);
   stepTransitionTimer = 0;
   metalTransitionTimer = 0;
   screenTransitionTimer = 0;
+  feedbackTransitionTimer = 0;
+  completionFeedbackTimer = 0;
   gesturePracticeTimer = 0;
   stepTransitionLocked = false;
   queuedStep = null;
@@ -288,6 +316,8 @@ function cancelActiveTransition() {
   delete viewer.dataset.practiceDirection;
   screen.classList.remove('switching');
   hud.classList.remove('updating');
+  document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
+  screen.querySelector('.live-activity.confirming')?.classList.remove('confirming');
   screen.replaceChildren(screenNodes[steps[current].screen]);
 }
 
