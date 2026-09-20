@@ -1,6 +1,6 @@
 # iPhone 17 Pro 操作按钮教程
 
-面向非技术用户的四步交互教程：从“设置”进入“操作按钮”，选择“翻译”，最终通过长按后的屏幕提示确认配置成功。
+面向非技术用户的七步交互教程：从 iPhone“设置”进入 Apple 账户，安全退出“媒体与购买项目”，再选择其他 Apple ID 身份登录。
 
 这是独立实现的教程原型，与 Apple Inc. 无关联或背书关系。官方产品机框的分发边界见 [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)。
 
@@ -41,7 +41,7 @@
 
 ```bash
 npm ci
-npm run dev -- --port 44120
+npm run dev -- --port 44122
 ```
 
 开发服务器默认绑定 `0.0.0.0`。
@@ -90,7 +90,7 @@ npm run preview -- --port 4173
 ```text
 src/
   main.ts           页面装配、教程状态机与输入处理
-  tutorial-content.ts 步骤文案、图标与四个手机屏幕模板
+  tutorial-content.ts 步骤文案、图标与七个手机屏幕模板
   style.css         视觉系统、响应式布局与动效
 public/media/
   bezel/            官方透明机框

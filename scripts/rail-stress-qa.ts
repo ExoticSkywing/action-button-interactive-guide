@@ -46,7 +46,7 @@ async function runStress(name: string, browserType: BrowserType) {
       updating: document.querySelector('[data-hud]')!.classList.contains('updating'),
       beamPaused: document.querySelector('[data-beam]')!.hasAttribute('data-paused'),
     }));
-    const screenByStep = ['settings', 'action', 'translate', 'complete'];
+    const screenByStep = ['settings', 'action', 'translate', 'complete', 'confirmSignout', 'signedOutMedia', 'identityChoice'];
     const adjacentOnly = result.history.every((entry, index) => index === 0 || Math.abs(entry.step - result.history[index - 1].step) <= 1);
     const serialized = result.history.every((entry, index) => index <= 1 || entry.time - result.history[index - 1].time >= 400);
     const passed = result.screen === screenByStep[Number(result.step)] && result.swaps === result.history.length - 1 && adjacentOnly && serialized && !result.flowing && !result.switching && !result.updating && !result.beamPaused;

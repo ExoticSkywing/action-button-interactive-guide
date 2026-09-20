@@ -58,6 +58,7 @@ root.innerHTML = `
         </div>
       </div>
 
+      <span class="hud-attention-cue ann ann-s ann-no-mark" data-note="↓" aria-hidden="true"></span>
       <article class="tutorial-hud" data-hud data-beam="tutorial-hud" data-active>
         <span class="hud-beam-inner" aria-hidden="true"></span>
         <span class="hud-beam-stroke" aria-hidden="true"></span>
@@ -212,7 +213,7 @@ function renderStep(index: number, animate = true, announce = true) {
   stepCurrent.textContent = String(current + 1);
   stepTotal.textContent = String(steps.length);
   const complete = current === steps.length - 1;
-  stepTitle.textContent = complete ? '随时使用“翻译”' : step.title;
+  stepTitle.textContent = step.title;
   if (current === 0) {
     const prefix = document.createTextNode('打开你 iPhone 上的');
     const settingsIcon = document.createElement('img');
@@ -221,11 +222,21 @@ function renderStep(index: number, animate = true, announce = true) {
     settingsIcon.alt = '设置';
     settingsIcon.draggable = false;
     stepBody.replaceChildren(prefix, settingsIcon);
-  } else {
-    stepBody.textContent = complete ? '长按侧面的操作按钮即可启动。' : step.body;
+  } else if (current === 1) {
+    stepBody.innerHTML = '进入设置页面后，轻点<span class="hud-note-avatar">顶部的头像</span>，<span class="hud-account-target">进入你的<img class="hud-inline-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-account">“Apple 账户”</span></span>。';
+  } else if (current === 2) {
+    stepBody.innerHTML = '在个人的 apple 账户页面，点击<span class="hud-media-target"><img class="hud-inline-media-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-media">媒体与购买项目</span></span>选项。';
+  } else if (current === 3) {
+    stepBody.innerHTML = '<span class="hud-note-signout">点击退出登录</span>，<span class="hud-note-warning">⚠️严格保证</span>你的<span class="hud-note-consistency">实际操作与前面步骤一致</span>，并再次检查是从<span class="hud-source-target"><img class="hud-inline-source-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-source">媒体与购买项目</span></span>进来的，确认后<span class="hud-note-signout">退出登录</span>。';
+  } else if (current === 4) {
+    stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
+  } else if (current === 5) {
+    stepBody.innerHTML = '在做<span class="hud-note-step-three">第3步</span>点击<span class="hud-relogin-target"><img class="hud-inline-relogin-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-relogin-media">媒体与购买项目</span></span>之前，建议先做<span class="hud-note-prior-steps">1,2两步</span>，以免直接点击<span class="hud-note-step-three">第3步</span><span class="hud-note-no-response">没有任何反应</span>。';
+  } else if (current === 6) {
+    stepBody.innerHTML = '如屏幕上点击<span class="hud-note-second-option">第二个选项</span>，以此来使用<span class="hud-other-account-target">其他<img class="hud-inline-other-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-other-account">Apple ID账户</span></span>登录。';
   }
   stepProof.textContent = step.hudProof;
-  stepProof.closest('.hud-proof')?.classList.toggle('hidden', current === 0);
+  stepProof.closest('.hud-proof')?.classList.toggle('hidden', !step.hudProof);
   primaryAction.textContent = '重新开始';
   primaryAction.setAttribute('aria-label', primaryAction.textContent);
   window.clearTimeout(screenTransitionTimer);

@@ -275,7 +275,7 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
     const topControlStep = await page.locator('.viewer').getAttribute('data-current-step');
     await page.locator('[data-rail-viewport]').focus();
     await page.keyboard.press('End');
-    await waitForScreen(page, 'complete');
+    await waitForScreen(page, 'identityChoice');
     const railKeyboardStep = await page.locator('.viewer').getAttribute('data-current-step');
 
     const runtime = await page.evaluate(async () => {
@@ -298,12 +298,12 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
     const row = { engine, width, height, expectsTouch, initial, railCount, hudButtonCount, expectedGesture, initialCoachmark, beamInitiallyPaused, reflectionStep0, blockedClickState, practiceState, nextFlow, nextSettled, previousFlow, afterClickHidden, gestureState, learnedCoachmark, beamActive, secondGestureState, reflectionStep2, metal, restored, remainsHidden, completionFeedback, completionSettled, proof, collapsed, beamPausedCollapsed, expanded, beamPausedExpanded, collapsedTransaction, collapsedSettled, restoredFocus, topControlStep, railKeyboardStep, runtime, consoleErrors, pageErrors, requestFailures, initialShot, fogShot };
     results.push(row);
     const failed =
-      initial !== 'settings' || railCount !== 4 || hudButtonCount !== 0 || !beamInitiallyPaused ||
+      initial !== 'settings' || railCount !== 7 || hudButtonCount !== 0 || !beamInitiallyPaused ||
       initialCoachmark.gesture !== expectedGesture || initialCoachmark.hidden !== 'false' || initialCoachmark.opacity !== '1' || initialCoachmark.accessibleCopy !== expectedCopy || initialCoachmark.describedBy !== 'rail-gesture-hint' || initialCoachmark.visibleProse.length !== 0 ||
       (expectsTouch ? initialCoachmark.touchDisplay !== 'grid' || initialCoachmark.wheelDisplay !== 'none' || !initialCoachmark.coarse : initialCoachmark.touchDisplay !== 'none' || initialCoachmark.wheelDisplay !== 'grid' || !initialCoachmark.fine) ||
       initialCoachmark.buttonCollisions !== 0 || initialCoachmark.horizontalGap > 12 || initialCoachmark.deviceCollision || initialCoachmark.hudCollision ||
       reflectionStep0.filter(item => item.visibility === 'visible').length !== 1 || !reflectionStep0[1].classes.includes('reflection-below') || Number(reflectionStep0[1].opacity) < 0.99 || !reflectionStep0[1].background.includes('chromatic-reflection-top-80.webp') || reflectionStep0.some((item, index) => index !== 1 && (item.visibility !== 'hidden' || item.opacity !== '0')) ||
-      blockedClickState !== 'settings' || practiceState.screen !== 'settings' || practiceState.current !== '0' || practiceState.selected !== '0' || practiceState.hud !== '第 1 步，共 4 步' || practiceState.stored !== '0' || practiceState.practicing ||
+      blockedClickState !== 'settings' || practiceState.screen !== 'settings' || practiceState.current !== '0' || practiceState.selected !== '0' || practiceState.hud !== '第 1 步，共 7 步' || practiceState.stored !== '0' || practiceState.practicing ||
       (expectsTouch ? practiceState.touchLearned !== '1' || practiceState.wheelLearned !== null : practiceState.wheelLearned !== '1' || practiceState.touchLearned !== null) ||
       nextFlow.direction !== 'next' || !nextFlow.flowing || !nextFlow.viewerFlowing || nextFlow.coreAnimation !== 'metal-flow-core-next' || nextFlow.streamAnimation !== 'metal-stream-next' || nextFlow.beadAnimation !== 'metal-bead-next' || nextFlow.coachOpacity !== '0' || nextFlow.beamAngle !== '300deg' || nextFlow.railFeedback !== '1' ||
       nextSettled.direction !== null || nextSettled.flowing || nextSettled.viewerFlowing || nextSettled.coachOpacity !== '0' || nextSettled.screen !== 'action' || nextSettled.screenOpacity !== '1' || nextSettled.screenRect.some(value => value <= 0) || nextSettled.switching || nextSettled.beamAngle !== '300deg' || nextSettled.feedback ||
@@ -313,10 +313,10 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
       learnedCoachmark.hidden !== 'true' || learnedCoachmark.opacity !== '0' || learnedCoachmark.describedBy !== null || learnedCoachmark.expectedStored !== '1' ||
       (expectsTouch ? learnedCoachmark.wheelStored !== null : learnedCoachmark.touchStored !== null) ||
       metal.anchors !== 1 || metal.selectedCount !== 1 || metal.pointerEvents !== 'none' || !metal.complete || metal.natural.join('x') !== '80x80' || !metal.source.endsWith('/media/metal-fx/chromatic-circle-80.webp') || metal.centerDelta.some(value => value > 1) || metal.rendered.some(value => value < 39) ||
-      restored !== 'translate' || remainsHidden !== 'true' || completionFeedback.angle !== '134deg' || !completionFeedback.confirming || !completionFeedback.animationNames.includes('completion-confirm') || !completionFeedback.animationNames.includes('completion-check') || completionSettled.confirming || completionSettled.feedback || completionSettled.namedAnimations.some(name => ['rail-icon-settle', 'completion-confirm', 'completion-copy', 'completion-check', 'beam-spin-tutorial-hud', 'beam-hue-shift-tutorial-hud'].includes(name)) || !proof.includes('设置完成') || collapsed !== 'collapsed' || !beamPausedCollapsed || expanded !== 'expanded' || beamPausedExpanded ||
+      restored !== 'translate' || remainsHidden !== 'true' || completionFeedback.angle !== '134deg' || completionFeedback.confirming || completionFeedback.animationNames.length !== 0 || completionSettled.confirming || completionSettled.feedback || completionSettled.namedAnimations.some(name => ['rail-icon-settle', 'completion-confirm', 'completion-copy', 'completion-check', 'beam-spin-tutorial-hud', 'beam-hue-shift-tutorial-hud'].includes(name)) || proof !== '' || collapsed !== 'collapsed' || !beamPausedCollapsed || expanded !== 'expanded' || beamPausedExpanded ||
       collapsedTransaction.mode !== 'collapsed' || collapsedTransaction.step !== '2' || collapsedTransaction.screen !== 'translate' || collapsedTransaction.stored !== '2' || collapsedTransaction.status !== '教程已关闭，进度已保存' || !collapsedTransaction.active || !collapsedTransaction.railInert || !collapsedTransaction.hudInert || !collapsedTransaction.closeInert ||
       collapsedSettled.step !== collapsedTransaction.step || collapsedSettled.screen !== collapsedTransaction.screen || collapsedSettled.stored !== collapsedTransaction.stored || collapsedSettled.status !== collapsedTransaction.status || collapsedSettled.flowing || collapsedSettled.switching ||
-      !restoredFocus.rail || restoredFocus.railInert || !restoredFocus.restoreInert || topControlStep !== '2' || railKeyboardStep !== '3' ||
+      !restoredFocus.rail || restoredFocus.railInert || !restoredFocus.restoreInert || topControlStep !== '2' || railKeyboardStep !== '6' ||
       runtime.canvas || runtime.video || runtime.webgl || runtime.bezel.join('x') !== '1350x2760' || !runtime.stageBackground.includes(width <= 600 ? 'helix-haze-mobile.webp' : 'helix-haze-desktop.webp') || runtime.stageAsset.natural.join('x') !== (width <= 600 ? '1200x2133' : '1600x1262') || runtime.railFaders.some(content => content !== 'none') || consoleErrors.length || pageErrors.length || requestFailures.length;
     if (failed) failures.push(`${engine} ${width}x${height}`);
   } catch (error) {

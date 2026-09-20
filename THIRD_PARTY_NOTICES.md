@@ -10,6 +10,22 @@
 
 This first-party product artwork is retained only because the project explicitly requires the official transparent hardware frame. Apple trademarks and product artwork are not licensed by the open-source notices below. Confirm distribution rights before publishing the repository or deploying it outside the authorized project context. The tutorial is an independent implementation and is not affiliated with or endorsed by Apple.
 
+## User-supplied iPhone screenshots and interface icon crops
+
+- Runtime paths: `public/media/screens/*.jpg`, `public/media/rail-action-apple.png`, and `public/media/rail-media-purchases-apple.png`
+- Source: screenshots and interface artwork supplied for this tutorial project
+- Rights holders: the screenshot owner and the respective application/platform trademark owners
+
+These assets are retained to reproduce the authorized tutorial states. Apple, App Store, application icons, account avatars, names, and other visible marks remain the property of their respective owners. They are not covered by the MIT notices below and do not grant redistribution rights outside the authorized project context.
+
+## Icons8 sign-out icon
+
+- Runtime path: `public/media/rail-signout-confirm-icons8.png`
+- Source: Icons8 asset supplied for this tutorial project
+- Provider: Icons8, https://icons8.com/
+
+The icon remains subject to the applicable Icons8 license and attribution requirements. Confirm the selected Icons8 license before public redistribution.
+
 ## Stage background photograph
 
 - Work: `Black wavy ribbons with shadows`
