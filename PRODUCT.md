@@ -22,6 +22,8 @@ Sign out of Media & Purchases and choose a different Apple ID without technical 
 6. Return to the Apple account and open Media & Purchases again.
 7. Choose the second identity option to sign in with another Apple ID.
 
+The numbered “1,2,3” actions shown in step 6 belong to the supplied screenshot’s own annotations. They are not references to the external seven-step tutorial rail. The confirmed step-6 HUD copy intentionally mirrors those on-screen annotation numbers.
+
 ## Recovery
 Direct step selection from the single external rail by click/tap, mouse wheel, vertical drag, or rail-scoped keyboard arrows; restart; close/reopen; local step persistence; reduced-motion support. Closing is a stable transaction boundary: queued navigation is cancelled, the current step and screen are settled, hidden controls become inert, and focus moves to the visible restore control. The bottom HUD is read-only and never duplicates navigation.
 

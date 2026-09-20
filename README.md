@@ -21,6 +21,8 @@
 - [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)：第三方素材、来源与许可；
 - [`RIGHTS.md`](./RIGHTS.md)：原创代码、Apple素材、第三方衍生资源和Git历史的分发边界。
 
+第五步退出图标为 Icons8 的 [`Logout` Color图标（ID 13925）](https://icons8.com/icon/13925/logout)，依照 [Icons8免费使用与署名条款](https://icons8.com/license)提供来源回链；完整声明见 `THIRD_PARTY_NOTICES.md`。
+
 ## 技术栈
 
 - Vite 7；

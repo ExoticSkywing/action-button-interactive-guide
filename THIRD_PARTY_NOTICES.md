@@ -21,10 +21,13 @@ These assets are retained to reproduce the authorized tutorial states. Apple, Ap
 ## Icons8 sign-out icon
 
 - Runtime path: `public/media/rail-signout-confirm-icons8.png`
-- Source: Icons8 asset supplied for this tutorial project
-- Provider: Icons8, https://icons8.com/
+- Work: `Logout` icon, Color style, asset ID `13925`
+- Exact asset page: https://icons8.com/icon/13925/logout
+- Provider: [Icons8](https://icons8.com/)
+- Source PNG request: https://img.icons8.com/?size=100&id=13925&format=png&color=000000
+- License and free-use attribution terms: https://icons8.com/license
 
-The icon remains subject to the applicable Icons8 license and attribution requirements. Confirm the selected Icons8 license before public redistribution.
+This public repository attributes the PNG to Icons8 with links to both the provider and the exact downloaded work, as required for free use. The icon remains subject to the current [Icons8 license](https://icons8.com/license); it is not relicensed under this repository’s other notices.
 
 ## Stage background photograph
 

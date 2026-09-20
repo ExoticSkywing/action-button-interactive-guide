@@ -7,6 +7,15 @@ const out = path.resolve(process.env.QA_OUTPUT_DIR ?? 'RECON/qa-output');
 await mkdir(out, { recursive: true });
 const results: unknown[] = [];
 const failures: string[] = [];
+const stepContracts = [
+  { index: 0, screen: 'settings', title: '打开“设置”', image: '/media/screens/home-screen-user.jpg', body: ['打开你 iPhone 上的'] },
+  { index: 1, screen: 'action', title: '进入“Apple 账户”', image: '/media/screens/settings-screen-user.jpg', body: ['顶部的头像', 'Apple 账户'] },
+  { index: 2, screen: 'translate', title: '进入“媒体与购买项目”', image: '/media/screens/apple-account-screen-user.jpg', body: ['媒体与购买项目'] },
+  { index: 3, screen: 'complete', title: '退出登录“媒体与购买项目”', image: '/media/screens/media-purchases-signout-user.jpg', body: ['严格保证', '媒体与购买项目', '退出登录'] },
+  { index: 4, screen: 'confirmSignout', title: '再次确认“退出登录”', image: '/media/screens/media-signout-confirm-user.jpg', body: ['退出登录', '若未出现', '可跳过此步'] },
+  { index: 5, screen: 'signedOutMedia', title: '准备登入新的Apple账户', image: '/media/screens/media-signed-out-account-user.jpg', body: ['第3步', '媒体与购买项目', '1,2两步', '没有任何反应'] },
+  { index: 6, screen: 'identityChoice', title: '选择其他身份（Apple账户）', image: '/media/screens/apple-account-identity-choice-user.jpg', body: ['第二个选项', '其他', 'Apple ID账户'] },
+] as const;
 
 async function dragRail(page: Page, direction: 'up' | 'down') {
   const box = await page.locator('[data-rail-viewport]').boundingBox();
@@ -278,6 +287,46 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
     await waitForScreen(page, 'identityChoice');
     const railKeyboardStep = await page.locator('.viewer').getAttribute('data-current-step');
 
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    const stepContractResults = [];
+    for (const contract of stepContracts) {
+      await page.locator(`[data-step="${contract.index}"]`).evaluate((element: HTMLElement) => element.click());
+      await waitForScreen(page, contract.screen);
+      await page.waitForFunction(() => {
+        const image = document.querySelector<HTMLImageElement>('[data-screen-state] > img');
+        return Boolean(image?.complete && image.naturalWidth > 0 && image.naturalHeight > 0);
+      });
+      stepContractResults.push(await page.evaluate(expected => {
+        const image = document.querySelector<HTMLImageElement>('[data-screen-state] > img')!;
+        const body = document.querySelector('[data-step-body]')?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
+        return {
+          expected,
+          current: Number(document.querySelector<HTMLElement>('.viewer')!.dataset.currentStep),
+          selected: Number(document.querySelector<HTMLElement>('.rail-button.selected')!.dataset.step),
+          screen: document.querySelector<HTMLElement>('[data-screen-state]')!.dataset.screenState,
+          title: document.querySelector('[data-step-title]')!.textContent?.trim(),
+          body,
+          bodyMatches: expected.body.every(text => body.includes(text)),
+          source: new URL(image.currentSrc || image.src).pathname,
+          complete: image.complete,
+          natural: [image.naturalWidth, image.naturalHeight],
+          rendered: [image.getBoundingClientRect().width, image.getBoundingClientRect().height],
+        };
+      }, contract));
+    }
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    const stepContractsPassed = stepContractResults.every(result =>
+      result.current === result.expected.index &&
+      result.selected === result.expected.index &&
+      result.screen === result.expected.screen &&
+      result.title === result.expected.title &&
+      result.bodyMatches &&
+      result.source === result.expected.image &&
+      result.complete &&
+      result.natural.join('x') === '1181x2560' &&
+      result.rendered.every(value => value > 0)
+    );
+
     const runtime = await page.evaluate(async () => {
       const stageBackground = getComputedStyle(document.querySelector('.viewer')!).backgroundImage;
       const stageSource = stageBackground.match(/url\(["']?([^"')]+)["']?\)/)?.[1] ?? '';
@@ -295,7 +344,7 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
       };
     });
 
-    const row = { engine, width, height, expectsTouch, initial, railCount, hudButtonCount, expectedGesture, initialCoachmark, beamInitiallyPaused, reflectionStep0, blockedClickState, practiceState, nextFlow, nextSettled, previousFlow, afterClickHidden, gestureState, learnedCoachmark, beamActive, secondGestureState, reflectionStep2, metal, restored, remainsHidden, completionFeedback, completionSettled, proof, collapsed, beamPausedCollapsed, expanded, beamPausedExpanded, collapsedTransaction, collapsedSettled, restoredFocus, topControlStep, railKeyboardStep, runtime, consoleErrors, pageErrors, requestFailures, initialShot, fogShot };
+    const row = { engine, width, height, expectsTouch, initial, railCount, hudButtonCount, expectedGesture, initialCoachmark, beamInitiallyPaused, reflectionStep0, blockedClickState, practiceState, nextFlow, nextSettled, previousFlow, afterClickHidden, gestureState, learnedCoachmark, beamActive, secondGestureState, reflectionStep2, metal, restored, remainsHidden, completionFeedback, completionSettled, proof, collapsed, beamPausedCollapsed, expanded, beamPausedExpanded, collapsedTransaction, collapsedSettled, restoredFocus, topControlStep, railKeyboardStep, stepContractResults, stepContractsPassed, runtime, consoleErrors, pageErrors, requestFailures, initialShot, fogShot };
     results.push(row);
     const failed =
       initial !== 'settings' || railCount !== 7 || hudButtonCount !== 0 || !beamInitiallyPaused ||
@@ -316,7 +365,7 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
       restored !== 'translate' || remainsHidden !== 'true' || completionFeedback.angle !== '134deg' || completionFeedback.confirming || completionFeedback.animationNames.length !== 0 || completionSettled.confirming || completionSettled.feedback || completionSettled.namedAnimations.some(name => ['rail-icon-settle', 'completion-confirm', 'completion-copy', 'completion-check', 'beam-spin-tutorial-hud', 'beam-hue-shift-tutorial-hud'].includes(name)) || proof !== '' || collapsed !== 'collapsed' || !beamPausedCollapsed || expanded !== 'expanded' || beamPausedExpanded ||
       collapsedTransaction.mode !== 'collapsed' || collapsedTransaction.step !== '2' || collapsedTransaction.screen !== 'translate' || collapsedTransaction.stored !== '2' || collapsedTransaction.status !== '教程已关闭，进度已保存' || !collapsedTransaction.active || !collapsedTransaction.railInert || !collapsedTransaction.hudInert || !collapsedTransaction.closeInert ||
       collapsedSettled.step !== collapsedTransaction.step || collapsedSettled.screen !== collapsedTransaction.screen || collapsedSettled.stored !== collapsedTransaction.stored || collapsedSettled.status !== collapsedTransaction.status || collapsedSettled.flowing || collapsedSettled.switching ||
-      !restoredFocus.rail || restoredFocus.railInert || !restoredFocus.restoreInert || topControlStep !== '2' || railKeyboardStep !== '6' ||
+      !restoredFocus.rail || restoredFocus.railInert || !restoredFocus.restoreInert || topControlStep !== '2' || railKeyboardStep !== '6' || !stepContractsPassed ||
       runtime.canvas || runtime.video || runtime.webgl || runtime.bezel.join('x') !== '1350x2760' || !runtime.stageBackground.includes(width <= 600 ? 'helix-haze-mobile.webp' : 'helix-haze-desktop.webp') || runtime.stageAsset.natural.join('x') !== (width <= 600 ? '1200x2133' : '1600x1262') || runtime.railFaders.some(content => content !== 'none') || consoleErrors.length || pageErrors.length || requestFailures.length;
     if (failed) failures.push(`${engine} ${width}x${height}`);
   } catch (error) {
