@@ -20,8 +20,22 @@ root.innerHTML = `
       <div><button type="button" class="explore" data-change-platform>选择设备</button><button type="button" class="buy" data-primary-action>重新开始</button></div>
     </nav>
 
-    <section id="tutorial" class="viewer" data-mode="expanded" aria-label="操作按钮分步教程">
+    <section id="tutorial" class="viewer" data-mode="expanded" data-phase="0" aria-label="操作按钮分步教程">
       <button class="close-control" type="button" data-close aria-label="关闭教程">${closeIcon}</button>
+
+      <nav class="tutorial-phase-controller" role="tablist" aria-label="教程阶段">
+        <div class="phase-track">
+          <button type="button" class="phase-pill is-active" data-phase="0" role="tab" aria-selected="true" aria-controls="tutorial">
+            <span class="phase-num">01</span>
+            <span class="phase-label">退出旧账户</span>
+          </button>
+          <button type="button" class="phase-pill" data-phase="1" role="tab" aria-selected="false" aria-controls="tutorial">
+            <span class="phase-num">02</span>
+            <span class="phase-label">登录新账户</span>
+          </button>
+          <span class="phase-glider" aria-hidden="true"></span>
+        </div>
+      </nav>
 
       <div class="product-composition">
         <nav class="function-rail" aria-label="教程步骤">
@@ -58,6 +72,23 @@ root.innerHTML = `
         <div class="device" data-device>
           <div class="device-screen" data-screen></div>
           <img class="official-bezel" src="/media/bezel/iphone-17-pro-cosmic-orange-portrait.png" alt="Apple 官方星宇橙色 iPhone 17 Pro 正面机框">
+        </div>
+        <div class="paddlenav-controls" aria-label="教程阶段切换">
+          <button type="button" class="paddlenav-button paddlenav-prev" data-paddlenav="prev" aria-label="返回阶段一：退出旧账户" disabled>
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <path d="m20 25-5.5-5.5a1.5 1.5 0 0 1 0-2.12l5.5-5.5a1.5 1.5 0 0 1 2.12 2.12L17.68 18.44l4.44 4.44a1.5 1.5 0 0 1-2.12 2.12z"/>
+            </svg>
+          </button>
+          <button type="button" class="paddlenav-button paddlenav-next" data-paddlenav="next" aria-label="进入阶段二：登录新账户">
+            <svg viewBox="0 0 36 36" aria-hidden="true">
+              <path d="m16 25 5.5-5.5a1.5 1.5 0 0 0 0-2.12L16 11.88a1.5 1.5 0 0 0-2.12 2.12l4.44 4.44-4.44 4.44a1.5 1.5 0 0 0 2.12 2.12z"/>
+            </svg>
+          </button>
+        </div>
+        <div class="mobile-phase-indicator" aria-hidden="true">
+          <span class="indicator-dot is-active" data-dot="0"></span>
+          <span class="indicator-dot" data-dot="1"></span>
+          <span class="indicator-hint">左右轻扫切换阶段</span>
         </div>
       </div>
 
@@ -120,6 +151,10 @@ const hud = document.querySelector<HTMLElement>('[data-hud]')!;
 const functionRail = document.querySelector<HTMLElement>('.function-rail')!;
 const closeControl = document.querySelector<HTMLButtonElement>('[data-close]')!;
 const restoreControl = document.querySelector<HTMLButtonElement>('[data-restore]')!;
+const phasePills = document.querySelectorAll<HTMLButtonElement>('[data-phase]');
+const paddlePrev = document.querySelector<HTMLButtonElement>('[data-paddlenav="prev"]');
+const paddleNext = document.querySelector<HTMLButtonElement>('[data-paddlenav="next"]');
+const mobileDots = document.querySelectorAll<HTMLElement>('[data-dot]');
 const railViewport = document.querySelector<HTMLElement>('[data-rail-viewport]')!;
 const railTrack = document.querySelector<HTMLElement>('[data-rail-track]')!;
 const metalFxAnchor = document.querySelector<HTMLElement>('.metal-fx-anchor')!;
@@ -237,6 +272,20 @@ function renderStep(index: number, animate = true, announce = true) {
     button.classList.toggle('reflection-below', buttonIndex === current + 1);
     button.setAttribute('aria-pressed', String(selected));
     button.tabIndex = selected ? 0 : -1;
+  });
+  const currentPhase = current >= 5 ? 1 : 0;
+  viewer.dataset.phase = String(currentPhase);
+  phasePills.forEach((pill) => {
+    const p = Number.parseInt(pill.dataset.phase ?? '0', 10);
+    const active = p === currentPhase;
+    pill.classList.toggle('is-active', active);
+    pill.setAttribute('aria-selected', String(active));
+  });
+  if (paddlePrev) paddlePrev.disabled = currentPhase === 0;
+  if (paddleNext) paddleNext.disabled = currentPhase === 1;
+  mobileDots.forEach((dot) => {
+    const d = Number.parseInt(dot.dataset.dot ?? '0', 10);
+    dot.classList.toggle('is-active', d === currentPhase);
   });
   stepCount.textContent = `第 ${current + 1} 步，共 ${steps.length} 步`;
   stepCurrent.textContent = String(current + 1);
@@ -482,6 +531,71 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     requestStep(event.key === 'Home' ? 0 : steps.length - 1);
   }
+});
+
+function switchPhase(targetPhase: number, triggerTransition = true) {
+  if (targetPhase === 0) {
+    if (current >= 5) renderStep(0, triggerTransition);
+  } else {
+    if (current < 5) renderStep(5, triggerTransition);
+  }
+}
+
+phasePills.forEach((pill) => {
+  pill.addEventListener('click', () => {
+    const p = Number.parseInt(pill.dataset.phase ?? '0', 10);
+    switchPhase(p);
+  });
+});
+
+paddlePrev?.addEventListener('click', () => switchPhase(0));
+paddleNext?.addEventListener('click', () => switchPhase(1));
+
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeStartTime = 0;
+let isSwiping = false;
+
+function handleSwipeStart(x: number, y: number) {
+  swipeStartX = x;
+  swipeStartY = y;
+  swipeStartTime = Date.now();
+  isSwiping = true;
+}
+
+function handleSwipeEnd(x: number, y: number) {
+  if (!isSwiping) return;
+  isSwiping = false;
+  const dx = x - swipeStartX;
+  const dy = y - swipeStartY;
+  const dt = Date.now() - swipeStartTime;
+  if (Math.abs(dx) > Math.abs(dy) * 1.1 && Math.abs(dx) > 30 && dt < 700) {
+    if (dx < 0 && current < 5) {
+      switchPhase(1);
+    } else if (dx > 0 && current >= 5) {
+      switchPhase(0);
+    }
+  }
+}
+
+const deviceElement = document.querySelector<HTMLElement>('.device')!;
+
+deviceElement?.addEventListener('touchstart', (e) => {
+  if (e.touches.length !== 1) return;
+  handleSwipeStart(e.touches[0].clientX, e.touches[0].clientY);
+}, { passive: true });
+
+deviceElement?.addEventListener('touchend', (e) => {
+  if (e.changedTouches.length !== 1) return;
+  handleSwipeEnd(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+}, { passive: true });
+
+deviceElement?.addEventListener('mousedown', (e) => {
+  handleSwipeStart(e.clientX, e.clientY);
+});
+
+window.addEventListener('mouseup', (e) => {
+  handleSwipeEnd(e.clientX, e.clientY);
 });
 
 current = railLearned ? storedStep() : 0;

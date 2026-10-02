@@ -366,3 +366,40 @@
 @media(max-width:520px){.gateway-frame{padding-inline:max(18px,env(safe-area-inset-left)) max(18px,env(safe-area-inset-right));padding-top:max(10px,env(safe-area-inset-top))}.gateway-header{min-height:54px}.gateway-header>p{display:none}.gateway-content{align-self:start;gap:38px;padding-block:52px 36px}.gateway-intro h1{max-width:7.8em;font-size:clamp(40px,12vw,54px);line-height:1.06}.gateway-intro>p{max-width:29em;font-size:15px;line-height:1.72}.gateway-assurance{margin-top:24px}.platform-option{min-height:74px;padding:12px 14px;grid-template-columns:44px minmax(0,1fr) auto;gap:13px}.platform-option.is-available{margin:0;padding:12px 14px;border-radius:16px}.platform-icon{width:44px;height:44px}.platform-icon svg{width:28px;height:28px}.platform-copy strong{font-size:16px}.platform-action>span{font-size:11.5px}.platform-help{margin-top:16px}.localnav{height:60px;padding-inline:14px}.localnav strong{font-size:17px}.localnav>div{gap:8px}.localnav [data-change-platform]{display:inline-flex}.localnav .explore[data-change-platform],.localnav .buy{min-height:44px;padding-inline:13px}.viewer{min-height:calc(100svh - 60px)}}
 @media(prefers-reduced-motion:no-preference){.platform-gateway:not([hidden]) .gateway-intro{animation:gateway-enter 620ms cubic-bezier(.16,1,.3,1) both}.platform-gateway:not([hidden]) .platform-picker{animation:gateway-enter 680ms cubic-bezier(.16,1,.3,1) 70ms both}}@keyframes gateway-enter{from{opacity:0;transform:translateY(14px);filter:blur(5px)}to{opacity:1;transform:none;filter:none}}
 @media(prefers-reduced-motion:reduce){.platform-option,.platform-action svg{transition:none!important}}
+
+/* Apple-inspired Phase Gallery & Horizontal Stage Controls */
+.tutorial-phase-controller{position:relative;z-index:8;display:flex;justify-content:center;margin-bottom:16px;padding:0 16px}
+.phase-track{display:inline-flex;align-items:center;gap:4px;padding:4px;border-radius:9999px;background:rgba(20,21,26,.85);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.14);border-top:1px solid rgba(255,255,255,.26);box-shadow:0 12px 36px -6px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.12)}
+.phase-pill{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 16px;border:0;border-radius:9999px;background:transparent;color:#868d98;font-size:13px;font-weight:550;letter-spacing:-.01em;cursor:pointer;transition:all 200ms cubic-bezier(.2,.8,.2,1);outline:none}
+.phase-pill:hover{color:#d0d4dc;background:rgba(255,255,255,.04)}
+.phase-pill.is-active{color:#ffffff;background:rgba(255,255,255,.16);border-top:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(0,0,0,.36);font-weight:600}
+.phase-num{font-size:11px;font-weight:700;color:#606775;letter-spacing:.04em;text-transform:uppercase}
+.phase-pill.is-active .phase-num{color:#2997ff}
+.phase-label{white-space:nowrap}
+
+/* Apple PaddleNav buttons */
+.paddlenav-controls{position:absolute;inset:0;pointer-events:none;z-index:9}
+.paddlenav-button{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(26,27,30,.72);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);color:#f5f5f7;display:grid;place-items:center;cursor:pointer;pointer-events:auto;box-shadow:0 8px 24px rgba(0,0,0,.5);transition:transform 200ms cubic-bezier(.2,.8,.2,1),background 180ms ease,border-color 180ms ease,opacity 200ms ease}
+.paddlenav-button:hover:not(:disabled){transform:translateY(-50%) scale(1.05);background:rgba(38,39,44,.88);border-color:rgba(255,255,255,.32);color:#ffffff}
+.paddlenav-button:active:not(:disabled){transform:translateY(-50%) scale(.96)}
+.paddlenav-button:disabled{opacity:0;pointer-events:none;cursor:default}
+.paddlenav-button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.paddlenav-prev{left:max(16px,calc(50% - 220px))}
+.paddlenav-next{right:max(16px,calc(50% - 220px))}
+
+/* Mobile Phase swipe hint & dots */
+.mobile-phase-indicator{display:none;align-items:center;justify-content:center;gap:8px;margin-top:14px;color:#6b7280;font-size:11.5px;letter-spacing:-.01em}
+.indicator-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all 200ms ease}
+.indicator-dot.is-active{width:18px;border-radius:9999px;background:#2997ff}
+.indicator-hint{margin-left:4px;color:#78808e}
+
+@media(max-width:920px){
+  .paddlenav-prev{left:-12px}
+  .paddlenav-next{right:-12px}
+}
+@media(max-width:680px){
+  .tutorial-phase-controller{margin-bottom:12px}
+  .phase-pill{min-height:34px;padding:0 13px;font-size:12px}
+  .paddlenav-controls{display:none} /* 移动端依赖原生横向手势 */
+  .mobile-phase-indicator{display:flex}
+}
