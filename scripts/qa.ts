@@ -3,6 +3,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 
 const base = process.env.QA_URL ?? 'http://127.0.0.1:4173';
+const tutorialUrl = `${base.replace(/#.*$/, '')}#ios`;
 const out = path.resolve(process.env.QA_OUTPUT_DIR ?? 'RECON/qa-output');
 await mkdir(out, { recursive: true });
 const results: unknown[] = [];
@@ -52,8 +53,8 @@ async function runCase(engine: string, type: BrowserType, width: number, height:
       localStorage.clear();
       sessionStorage.setItem('__qa_storage_reset', '1');
     });
-    await page.goto(base, { waitUntil: 'domcontentloaded', timeout: 15_000 });
-    if (await page.title() !== 'iPhone 17 Pro · 操作按钮教程') throw new Error(`unexpected application at ${base}`);
+    await page.goto(tutorialUrl, { waitUntil: 'domcontentloaded', timeout: 15_000 });
+    if (await page.title() !== 'iPhone 17 Pro · 操作按钮教程') throw new Error(`unexpected application at ${tutorialUrl}`);
     await waitForScreen(page, 'settings');
 
     const expectedGesture = expectsTouch ? 'touch' : 'wheel';

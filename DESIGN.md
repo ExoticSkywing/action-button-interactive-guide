@@ -1,7 +1,10 @@
 # DESIGN
 
 ## Direction
-Immersive Apple Product Viewer, not a white landing page with a demo component. One near-black atmospheric stage contains the local navigation, official device, functional icon rail, connector, close control, and one tutorial HUD.
+Two task layers share one restrained dark product world without becoming one visual component:
+
+1. The root gateway is a functional operating-system selector: one decisive question, one aligned platform list, and only real destinations enabled.
+2. `#ios` is the immersive Apple Product Viewer—not a white landing page with a demo component. Its near-black atmospheric stage contains the local navigation, official device, functional icon rail, connector, close control, and one tutorial HUD.
 
 ## Authority
 1. User-supplied Apple Action Button expanded-state screenshot.
@@ -9,7 +12,15 @@ Immersive Apple Product Viewer, not a white landing page with a demo component. 
 3. Apple CN Product Viewer interaction behavior and timing.
 4. userinterface.wiki and Impeccable craft floor for task-oriented UI quality.
 
-## Visual system
+## Gateway visual system
+- Structure: a wide introductory column and one vertically aligned platform list; below 681px they collapse into one reading order.
+- Available destination: one high-contrast light row with an explicit verb-first action.
+- Unavailable destinations: native disabled buttons with visible “准备中” state; they never impersonate links.
+- Icons: authored inline SVGs with one consistent 24px stroke/fill system; no emoji and no external icon runtime.
+- Atmosphere: the gateway alone lazily loads React Bits Grid Scan's four-plane perspective shader in a pointer-ignored background layer. It uses a dim violet scan under dark static fields; blue remains reserved for actionable controls. Reduced motion draws one static frame; missing WebGL uses a static perspective-grid fallback. Entering `#ios` disposes the renderer and releases its WebGL context. See `THIRD_PARTY_NOTICES.md`.
+- Accessibility: every target is at least 74px tall, text contrast meets WCAG AA, hidden route layers are inert, and route transitions move focus to the destination heading.
+
+## Tutorial visual system
 - Stage: static mobile and desktop stage artwork over `#000`. The stage never follows or samples uploaded screen colors. Runtime adds no Canvas, WebGL, JavaScript, animation, filter, or video. See `THIRD_PARTY_NOTICES.md`.
 - Primary text: `#f5f5f7`; secondary text remains AA-readable.
 - One translucent HUD material with 24px blur and subtle inner stroke.
@@ -36,4 +47,4 @@ Immersive Apple Product Viewer, not a white landing page with a demo component. 
 - Historical experiments remain in Git tags and are not production dependencies.
 
 ## Refusals
-No emoji icons, placeholder blocks, decorative glass, duplicate success cards, looping step arrows, WebGL, 3D replacement, or generic card grid.
+No emoji icons, placeholder blocks, decorative glass, duplicate success cards, looping step arrows, WebGL or 3D replacement inside the `#ios` tutorial, or generic card grid.

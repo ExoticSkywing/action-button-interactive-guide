@@ -1,6 +1,8 @@
-# iPhone 17 Pro 操作按钮教程
+# 设备操作教程入口与 iOS 七步教程
 
-面向非技术用户的七步交互教程：从 iPhone“设置”进入 Apple 账户，安全退出“媒体与购买项目”，再选择其他 Apple ID 身份登录。
+面向非技术用户的操作系统导航首页：用户先选择正在操作的设备系统，再进入对应的分步教程。当前 `iOS / iPadOS` 进入本地七步教程；Android、HarmonyOS、Windows 与 macOS 在配置真实目标 URL 前明确显示为“准备中”。
+
+iOS 教程从“设置”进入 Apple 账户，安全退出“媒体与购买项目”，再选择其他 Apple ID 身份登录。
 
 这是独立实现的教程原型，与 Apple Inc. 无关联或背书关系。官方产品机框的分发边界见 [`THIRD_PARTY_NOTICES.md`](./THIRD_PARTY_NOTICES.md)。
 
@@ -28,9 +30,8 @@
 - Vite 7；
 - TypeScript；
 - 原生 HTML / CSS / SVG；
-- 无前端框架；
-- 无生产运行时依赖；
-- 教程运行时无 Canvas、WebGL、Video 或 React。
+- 首页背景按需加载 `three@0.180.0` 与 React Bits Grid Scan shader；
+- 无前端框架；`#ios` 教程运行时无 Canvas、WebGL、Video 或 React。
 
 ## 环境要求
 
@@ -46,7 +47,18 @@ npm ci
 npm run dev -- --port 44122
 ```
 
-开发服务器默认绑定 `0.0.0.0`。
+开发服务器默认绑定 `0.0.0.0`。根路径显示操作系统选择首页，`#ios` 打开本地 iOS / iPadOS 教程。
+
+其他系统的真实教程地址通过构建时环境变量配置：
+
+```bash
+VITE_ANDROID_TUTORIAL_URL=https://example.com/android
+VITE_HARMONY_TUTORIAL_URL=https://example.com/harmony
+VITE_WINDOWS_TUTORIAL_URL=https://example.com/windows
+VITE_MACOS_TUTORIAL_URL=https://example.com/macos
+```
+
+可复制 [`.env.example`](./.env.example) 后填写。未配置、格式无效或不是 `http/https` 的目标保持为原生禁用“准备中”，不会生成假链接。Vite 会把这些值编译进公开前端产物，因此不要在其中保存密钥。
 
 ## 构建与验证
 
@@ -73,7 +85,8 @@ QA_URL=http://127.0.0.1:4173 npm run qa:all
 可单独执行：
 
 ```bash
-npm run qa          # 八组双引擎教程流程与资源合同
+npm run qa:gateway  # 六组双引擎首页、路由、键盘与响应式合同
+npm run qa          # 八组双引擎七步教程流程与资源合同
 npm run qa:stress   # 双引擎快速连续滑动串行门禁
 npm run qa:metal    # Metal FX 动画闭环门禁
 ```
@@ -91,15 +104,18 @@ npm run preview -- --port 4173
 
 ```text
 src/
-  main.ts           页面装配、教程状态机与输入处理
+  main.ts           页面装配、Hash 路由、教程状态机与输入处理
+  platform-navigation.ts 操作系统入口配置、图标与语义结构
+  grid-scan.ts      React Bits Grid Scan shader 的首页原生运行壳（动态加载）
   tutorial-content.ts 步骤文案、图标与七个手机屏幕模板
-  style.css         视觉系统、响应式布局与动效
+  style.css         首页与教程视觉系统、响应式布局和动效
 public/media/
   bezel/            官方透明机框
   metal-fx/         离线生成的选中环与邻近反射资源
   stage/            移动端与桌面端静态背景裁图
 scripts/
-  qa.ts             主流程与资源合同
+  gateway-qa.ts     首页、路由、焦点和响应式入口合同
+  qa.ts             七步教程主流程与资源合同
   rail-stress-qa.ts 快速输入串行门禁
   verify-metal-loop.py
 RECON/
@@ -108,7 +124,9 @@ RECON/
   qa-output/        自动生成且忽略的测试截图
 ```
 
-## 当前运行合同
+## 当前教程运行合同（仅 `#ios`）
+
+首页 `/` 独立运行 React Bits Grid Scan：支持 WebGL 时懒加载 Three.js Shader，`prefers-reduced-motion` 绘制单帧；不支持 WebGL 时使用静态透视网格。进入 `#ios` 即销毁首页 Canvas 与 WebGL 上下文，直接访问 `#ios` 不请求背景引擎。
 
 ```text
 Canvas = 0

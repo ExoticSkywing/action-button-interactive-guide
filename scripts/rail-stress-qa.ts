@@ -1,11 +1,14 @@
 import { chromium, firefox, type BrowserType } from '@playwright/test';
 
+const base = process.env.QA_URL ?? 'http://127.0.0.1:4173';
+const tutorialUrl = `${base.replace(/#.*$/, '')}#ios`;
+
 async function runStress(name: string, browserType: BrowserType) {
   const browser = await browserType.launch({ headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
     await page.addInitScript(() => localStorage.setItem('apple-bezel-tutorial-v5.2-touch-learned', '1'));
-    await page.goto(process.env.QA_URL ?? 'http://127.0.0.1:4173');
+    await page.goto(tutorialUrl);
     if (await page.title() !== 'iPhone 17 Pro · 操作按钮教程') throw new Error(`${name}: unexpected application`);
     const rail = page.locator('[data-rail-viewport]');
     const box = await rail.boundingBox();

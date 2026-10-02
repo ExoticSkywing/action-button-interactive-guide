@@ -51,6 +51,45 @@ The stage ships two darkened, responsive derivative crops from this photograph: 
 
 The mobile HUD adapts the generated `md`, `dark`, `colorful` CSS engine without shipping React. It preserves the upstream stroke, inner glow, bloom, mask, and palette at strength 1, but freezes the edge at 226deg and disables its perpetual rotation, hue shift, and fade animations to avoid continuous mobile rasterization. The HUD supplies its own 24px radius and 1px border. Reduced motion additionally hides bloom and uses a quieter static white/cyan edge.
 
+## React Bits Grid Scan
+
+- Project: `react-bits`
+- Component: `Grid Scan`
+- Author: David Haz
+- Repository: https://github.com/DavidHDev/react-bits
+- Source commit: `9481af758aae6cfb34c3652ec40a1c099360331f`
+- Source file: `src/ts-default/Backgrounds/GridScan/GridScan.tsx`
+- Component page: https://www.reactbits.dev/backgrounds/grid-scan
+- License: MIT + Commons Clause License Condition v1.0
+
+The device-selection homepage adapts the component's original four-plane perspective Grid Scan fragment shader, default grid and scan colors, ping-pong scan timing, noise, and pointer-driven skew to native TypeScript with Three.js. It is used only inside this complete tutorial website and is not sold, sublicensed, or redistributed as a standalone component or port. The original optional webcam/face tracking, gyroscope, click-generated scans, and post-processing chain are excluded to avoid permissions and unnecessary runtime weight. Reduced-motion users receive a single static shader frame; entering the iOS tutorial disposes the renderer and releases its WebGL context.
+
+```text
+MIT + Commons Clause License Condition v1.0
+Copyright (c) 2026 David Haz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, and distribute the Software as part of
+an application, website, or product, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+Commons Clause Restriction: You may use this Software, including for any
+commercial purpose, so long as you do not sell, sublicense, or redistribute
+the components themselves—whether alone, in a bundle, or as a ported version.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
 ## metal-fx
 
 - Project: `metal-fx`

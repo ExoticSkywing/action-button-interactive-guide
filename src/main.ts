@@ -1,9 +1,12 @@
 import './style.css';
 import { chevron, closeIcon, screenNodes, steps } from './tutorial-content';
+import type { GridScanController } from './grid-scan';
+import { renderPlatformGateway } from './platform-navigation';
 
 type ViewerMode = 'expanded' | 'collapsed';
 const root = document.querySelector<HTMLElement>('#app')!;
 root.innerHTML = `
+  ${renderPlatformGateway()}
   <!--
   THESIS: Apple Product Viewer becomes a task-completion tutorial; refuse the white landing-page-plus-demo scaffold.
   OWN-WORLD: Neutral-black ribbon stage, official orange Product Bezel, one translucent HUD, one monochrome icon rail.
@@ -11,10 +14,10 @@ root.innerHTML = `
   FIRST VIEWPORT: Dark localnav above a full-bleed viewer; rail and phone read as one object; one card floats at the bottom.
   FORM: Operate mode, official Apple reference canon, seed APPLE-BEZEL-V4. FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
   -->
-  <main class="experience-shell">
+  <main class="experience-shell" data-tutorial-app hidden>
     <nav class="localnav" aria-label="产品导航">
-      <strong>iPhone 17 Pro</strong>
-      <div><button type="button" class="explore">概览</button><button type="button" class="buy" data-primary-action>重新开始</button></div>
+      <strong tabindex="-1" data-tutorial-heading>iPhone 17 Pro</strong>
+      <div><button type="button" class="explore" data-change-platform>选择设备</button><button type="button" class="buy" data-primary-action>重新开始</button></div>
     </nav>
 
     <section id="tutorial" class="viewer" data-mode="expanded" aria-label="操作按钮分步教程">
@@ -78,6 +81,32 @@ root.innerHTML = `
     </section>
   </main>`;
 
+const platformGateway = document.querySelector<HTMLElement>('[data-platform-gateway]')!;
+const gridScanHost = document.querySelector<HTMLElement>('[data-grid-scan-host]')!;
+let gridScan: GridScanController | null = null;
+let gridScanRequest = 0;
+let gridScanSupport: boolean | null = null;
+function supportsGridScan() {
+  if (gridScanSupport !== null) {
+    if (!gridScanSupport) gridScanHost.dataset.gridScan = 'fallback';
+    return gridScanSupport;
+  }
+  const probe = document.createElement('canvas');
+  try {
+    const context = probe.getContext('webgl2', { alpha: true }) ?? probe.getContext('webgl', { alpha: true });
+    gridScanSupport = context !== null;
+    if (!gridScanSupport) gridScanHost.dataset.gridScan = 'fallback';
+    context?.getExtension('WEBGL_lose_context')?.loseContext();
+  } catch {
+    gridScanSupport = false;
+    gridScanHost.dataset.gridScan = 'fallback';
+  }
+  return gridScanSupport;
+}
+const tutorialApp = document.querySelector<HTMLElement>('[data-tutorial-app]')!;
+const gatewayTitle = document.querySelector<HTMLElement>('#gateway-title')!;
+const tutorialHeading = document.querySelector<HTMLElement>('[data-tutorial-heading]')!;
+const changePlatform = document.querySelector<HTMLButtonElement>('[data-change-platform]')!;
 const viewer = document.querySelector<HTMLElement>('.viewer')!;
 const screen = document.querySelector<HTMLElement>('[data-screen]')!;
 const status = document.querySelector<HTMLElement>('[data-status]')!;
@@ -430,8 +459,13 @@ primaryAction.addEventListener('click', () => {
   resetStep(0);
   document.querySelector('#tutorial')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+changePlatform.addEventListener('click', () => {
+  history.pushState(null, '', `${location.pathname}${location.search}`);
+  syncRoute(true);
+});
 
 document.addEventListener('keydown', (event) => {
+  if (tutorialApp.hidden) return;
   if (event.key === 'Escape') {
     if (mode === 'expanded') setMode('collapsed');
     return;
@@ -460,6 +494,42 @@ coarsePointer.addEventListener?.('change', syncPreferredInput);
 anyCoarsePointer.addEventListener?.('change', syncPreferredInput);
 document.addEventListener('visibilitychange', () => viewer.toggleAttribute('data-page-hidden', document.hidden));
 viewer.toggleAttribute('data-page-hidden', document.hidden);
+
+function syncRoute(moveFocus = false) {
+  const showTutorial = location.hash === '#ios';
+  if (location.hash && !showTutorial) {
+    history.replaceState(null, '', `${location.pathname}${location.search}`);
+  }
+  platformGateway.hidden = showTutorial;
+  platformGateway.inert = showTutorial;
+  if (showTutorial) {
+    gridScanRequest += 1;
+    gridScan?.dispose();
+    gridScan = null;
+    gridScanHost.dataset.gridScan = 'stopped';
+  } else if (!gridScan && supportsGridScan()) {
+    const request = ++gridScanRequest;
+    void import('./grid-scan')
+      .then(({ createGridScan }) => {
+        if (request !== gridScanRequest || location.hash === '#ios' || gridScan) return;
+        gridScan = createGridScan(gridScanHost, platformGateway);
+        if (!gridScan) gridScanHost.dataset.gridScan = 'fallback';
+      })
+      .catch(() => {
+        if (request === gridScanRequest && location.hash !== '#ios') gridScanHost.dataset.gridScan = 'fallback';
+      });
+  }
+  tutorialApp.hidden = !showTutorial;
+  tutorialApp.inert = !showTutorial;
+  document.documentElement.dataset.route = showTutorial ? 'ios' : 'platforms';
+  document.title = showTutorial ? 'iPhone 17 Pro · 操作按钮教程' : '选择设备 · 设备操作教程';
+  document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', showTutorial ? '#000000' : '#07080a');
+  if (moveFocus) (showTutorial ? tutorialHeading : gatewayTitle).focus({ preventScroll: true });
+}
+
+window.addEventListener('hashchange', () => syncRoute(true));
+window.addEventListener('popstate', () => syncRoute(true));
+syncRoute();
 syncRailCoachmark();
 syncModeAccessibility();
 renderStep(current, false, false);

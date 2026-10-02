@@ -13,16 +13,20 @@
     "typecheck": "tsc -b --pretty false",
     "lint": "eslint .",
     "check": "npm run lint && npm run build",
+    "qa:gateway": "tsx scripts/gateway-qa.ts",
     "qa": "tsx scripts/qa.ts",
     "qa:stress": "tsx scripts/rail-stress-qa.ts",
     "qa:metal": "python3 scripts/verify-metal-loop.py",
-    "qa:all": "npm run qa && npm run qa:stress && npm run qa:metal"
+    "qa:all": "npm run qa:gateway && npm run qa && npm run qa:stress && npm run qa:metal"
   },
-  "dependencies": {},
+  "dependencies": {
+    "three": "^0.180.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@playwright/test": "^1.55.0",
     "@types/node": "^24.0.0",
+    "@types/three": "^0.180.0",
     "eslint": "^9.17.0",
     "globals": "^16.0.0",
     "tsx": "^4.23.1",

@@ -1,7 +1,7 @@
 # PRODUCT
 
 ## Product truth
-A nontechnical-user tutorial viewer that borrows the Apple iPhone 17 Pro Action Button interaction language. The user selects a step from the external rail, sees a real iPhone screenshot update, and follows one concise instruction to switch the Apple ID used by Media & Purchases.
+A nontechnical-user tutorial gateway. The root page asks which operating system the person is using and exposes only destinations that have a real tutorial URL. The local `#ios` destination opens the existing seven-step Apple ID / Media & Purchases tutorial without altering its verified state machine, screenshots, HUD copy, or rail behavior.
 
 ## Priority
 1. Task completion
@@ -11,7 +11,14 @@ A nontechnical-user tutorial viewer that borrows the Apple iPhone 17 Pro Action 
 5. Decoration
 
 ## User outcome
-Sign out of Media & Purchases and choose a different Apple ID without technical assistance.
+Choose the operating system of the device being operated, enter the matching tutorial when one is available, and complete the task without technical assistance.
+
+## Gateway contract
+- The root route is the operating-system selector.
+- `#ios` opens the local iOS / iPadOS tutorial.
+- Android, HarmonyOS, Windows, and macOS remain visible but natively disabled until a real destination URL is configured.
+- Browser history, refresh, and the tutorial’s “选择设备” control preserve a recoverable route between the gateway and iOS tutorial.
+- Hidden route layers are both `hidden` and `inert`; route changes move focus to the destination heading.
 
 ## Canonical flow
 1. Open Settings from the Home Screen.
