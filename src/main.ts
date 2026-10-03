@@ -43,19 +43,14 @@ root.innerHTML = `
             </div>
             <span class="metal-fx-anchor" aria-hidden="true"><span class="metal-fx-stream"></span><span class="metal-fx-bead"></span><picture><source media="(prefers-reduced-motion: reduce)" srcset="/media/metal-fx/chromatic-circle-80.png"><img src="/media/metal-fx/chromatic-circle-80.webp" alt=""></picture></span>
           </div>
-          <!-- 独立优雅的步骤定位标牌 (Step Badge Bridge between Rail & Phone) -->
+          <!-- 创意优雅且零遮挡的步骤微指示标牌 (Zero-Overlap Step Micro-Badge) -->
           <div class="rail-step-badge" data-rail-step-badge aria-hidden="true">
             <span class="step-badge-line"></span>
             <div class="step-badge-chip">
               <span class="step-badge-dot"></span>
-              <span class="step-badge-prefix">STEP</span>
               <span class="step-badge-num" data-step-badge-num>01</span>
             </div>
-            <span class="step-badge-pointer">
-              <svg viewBox="0 0 6 10" width="5" height="8" fill="none" stroke="currentColor" stroke-width="1.8">
-                <path d="M1 1l4 4-4 4"/>
-              </svg>
-            </span>
+            <span class="step-badge-pointer">›</span>
           </div>
           <div class="rail-coachmark" id="rail-gesture-hint" data-rail-coachmark role="status">
             <div class="touch-gesture-demo" aria-hidden="true">
