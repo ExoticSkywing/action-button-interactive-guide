@@ -503,55 +503,82 @@
 }
 
 /* ========================================================
-   创意优雅且两头零遮挡的步骤微胶囊 (Zero-Overlap 16px Micro Step Badge)
+   创意优雅、清晰易懂且极具呼吸感的步骤指示气泡 (Step Callout Bubble)
    ======================================================== */
 .rail-step-badge {
   position: absolute;
-  left: 57px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px;
-  height: 24px;
+  left: 35px;
+  top: calc(50% - 30px);
+  transform: translate(-50%, -100%);
   display: flex !important;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
   pointer-events: none;
-  z-index: 10 !important;
+  z-index: 12 !important;
   opacity: 1 !important;
   visibility: visible !important;
+  white-space: nowrap;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.7));
+  animation: calloutFloat 3s ease-in-out infinite;
 }
 
-.step-badge-connector {
-  width: 16px;
+@keyframes calloutFloat {
+  0%, 100% {
+    transform: translate(-50%, -100%) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -100%) translateY(-3px);
+  }
+}
+
+.step-badge-bubble {
   height: 24px;
-  border-radius: 8px;
+  padding: 0 9px 0 7px;
+  border-radius: 99px;
   background: rgba(22, 23, 27, 0.94);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
+  gap: 5px;
 }
 
 .step-badge-dot {
-  width: 3px;
-  height: 3px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: #2997ff;
-  box-shadow: 0 0 5px #2997ff, 0 0 8px rgba(41, 151, 255, 0.6);
+  box-shadow: 0 0 6px #2997ff, 0 0 10px rgba(41, 151, 255, 0.6);
   flex-shrink: 0;
 }
 
-.step-badge-num {
-  font-size: 10px;
+.step-badge-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: -0.01em;
+  line-height: 1;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1.5px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", sans-serif;
+}
+
+.step-badge-label strong {
+  font-size: 12px;
   font-weight: 700;
   color: #ffffff;
-  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
-  line-height: 1;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.step-badge-caret {
+  width: 0;
+  height: 0;
+  border-left: 4.5px solid transparent;
+  border-right: 4.5px solid transparent;
+  border-top: 5px solid rgba(22, 23, 27, 0.94);
+  margin-top: -0.5px;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.15));
 }
