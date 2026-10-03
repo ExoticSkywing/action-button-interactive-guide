@@ -503,37 +503,39 @@
 }
 
 /* ========================================================
-   创意优雅、清晰易懂且极具呼吸感的步骤指示气泡 (Step Callout Bubble)
+   创意优雅、左侧展示且完美避让开头手势的步骤呼出标牌 (Left Step Callout)
    ======================================================== */
 .rail-step-badge {
   position: absolute;
-  left: 35px;
-  top: calc(50% - 30px);
-  transform: translate(-50%, -100%);
-  display: flex !important;
-  flex-direction: column;
+  left: 6px;
+  top: calc(50% - 28px);
+  transform: translateY(-50%);
+  display: inline-flex !important;
   align-items: center;
+  gap: 3px;
   pointer-events: none;
   z-index: 12 !important;
-  opacity: 1 !important;
-  visibility: visible !important;
+  opacity: 1;
+  visibility: visible;
   white-space: nowrap;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.7));
-  animation: calloutFloat 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.65));
+  transition: opacity 360ms cubic-bezier(0.16, 1, 0.3, 1), transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes calloutFloat {
-  0%, 100% {
-    transform: translate(-50%, -100%) translateY(0);
-  }
-  50% {
-    transform: translate(-50%, -100%) translateY(-3px);
-  }
+/* 当页面加载处于新手手势教学状态时，步骤标牌优雅隐身避让，绝不打架 */
+.function-rail.teaching .rail-step-badge,
+.viewer.teaching-rail .rail-step-badge,
+.viewer:not(.practicing-rail) .function-rail.teaching .rail-step-badge {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(-50%) translateX(-8px) scale(0.92) !important;
+  pointer-events: none !important;
+  transition: none !important;
 }
 
 .step-badge-bubble {
-  height: 24px;
-  padding: 0 9px 0 7px;
+  height: 22px;
+  padding: 0 8px 0 6px;
   border-radius: 99px;
   background: rgba(22, 23, 27, 0.94);
   backdrop-filter: blur(16px);
@@ -542,15 +544,15 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .step-badge-dot {
-  width: 4px;
-  height: 4px;
+  width: 3.5px;
+  height: 3.5px;
   border-radius: 50%;
   background: #2997ff;
-  box-shadow: 0 0 6px #2997ff, 0 0 10px rgba(41, 151, 255, 0.6);
+  box-shadow: 0 0 5px #2997ff, 0 0 8px rgba(41, 151, 255, 0.5);
   flex-shrink: 0;
 }
 
@@ -567,18 +569,26 @@
 }
 
 .step-badge-label strong {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #ffffff;
   font-variant-numeric: tabular-nums;
 }
 
-.step-badge-caret {
-  width: 0;
-  height: 0;
-  border-left: 4.5px solid transparent;
-  border-right: 4.5px solid transparent;
-  border-top: 5px solid rgba(22, 23, 27, 0.94);
-  margin-top: -0.5px;
-  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.15));
+.step-badge-pointer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+  margin-left: -1px;
+}
+
+@media(min-width: 769px) {
+  .rail-step-badge {
+    left: auto;
+    right: calc(100% + 10px);
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }

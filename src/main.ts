@@ -43,13 +43,17 @@ root.innerHTML = `
             </div>
             <span class="metal-fx-anchor" aria-hidden="true"><span class="metal-fx-stream"></span><span class="metal-fx-bead"></span><picture><source media="(prefers-reduced-motion: reduce)" srcset="/media/metal-fx/chromatic-circle-80.png"><img src="/media/metal-fx/chromatic-circle-80.webp" alt=""></picture></span>
           </div>
-          <!-- 创意优雅、清晰易懂且极具呼吸感的步骤指示气泡 (Step Callout Bubble) -->
+          <!-- 创意优雅、左侧展示且完美避让开头手势的步骤呼出标牌 -->
           <div class="rail-step-badge" data-rail-step-badge aria-hidden="true">
             <div class="step-badge-bubble">
               <span class="step-badge-dot"></span>
               <span class="step-badge-label">第<strong data-step-badge-num>1</strong>步</span>
             </div>
-            <div class="step-badge-caret"></div>
+            <span class="step-badge-pointer" aria-hidden="true">
+              <svg viewBox="0 0 6 10" width="5" height="8" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M1 1l4 4-4 4"/>
+              </svg>
+            </span>
           </div>
           <div class="rail-coachmark" id="rail-gesture-hint" data-rail-coachmark role="status">
             <div class="touch-gesture-demo" aria-hidden="true">
