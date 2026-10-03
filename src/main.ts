@@ -43,14 +43,12 @@ root.innerHTML = `
             </div>
             <span class="metal-fx-anchor" aria-hidden="true"><span class="metal-fx-stream"></span><span class="metal-fx-bead"></span><picture><source media="(prefers-reduced-motion: reduce)" srcset="/media/metal-fx/chromatic-circle-80.png"><img src="/media/metal-fx/chromatic-circle-80.webp" alt=""></picture></span>
           </div>
-          <!-- 创意优雅且零遮挡的步骤微指示标牌 (Zero-Overlap Step Micro-Badge) -->
+          <!-- 创意优雅且两头零遮挡的步骤微胶囊 (Zero-Overlap 16px Micro Step Badge) -->
           <div class="rail-step-badge" data-rail-step-badge aria-hidden="true">
-            <span class="step-badge-line"></span>
-            <div class="step-badge-chip">
+            <div class="step-badge-connector">
               <span class="step-badge-dot"></span>
-              <span class="step-badge-num" data-step-badge-num>01</span>
+              <span class="step-badge-num" data-step-badge-num>1</span>
             </div>
-            <span class="step-badge-pointer">›</span>
           </div>
           <div class="rail-coachmark" id="rail-gesture-hint" data-rail-coachmark role="status">
             <div class="touch-gesture-demo" aria-hidden="true">
@@ -299,7 +297,7 @@ function renderStep(index: number, animate = true, announce = true) {
   stepCurrent.textContent = String(current + 1);
   const badgeNum = document.querySelector<HTMLElement>('[data-step-badge-num]');
   if (badgeNum) {
-    badgeNum.textContent = String(current + 1).padStart(2, '0');
+    badgeNum.textContent = String(current + 1);
   }
   stepTotal.textContent = String(steps.length);
   const complete = current === steps.length - 1;
