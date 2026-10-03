@@ -382,3 +382,122 @@
   .gallery-dock{bottom:max(14px,env(safe-area-inset-bottom));max-width:100%;padding-inline:12px;gap:8px}
   .gallery-dock .paddlenav-icon{width:36px;height:36px}
 }
+
+/* ========================================================
+   Apple 官方 1:1 顶部双阶段导航栏 (Top Dual Phase Segmented Nav)
+   ======================================================== */
+.top-phase-nav {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: max(12px, env(safe-area-inset-top)) 20px 11px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+}
+
+.top-phase-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.top-phase-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  padding: 4px 2px;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 180ms ease;
+}
+
+.top-phase-tab .top-phase-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  min-width: 22px;
+  padding: 0 5px;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  background: rgba(58, 58, 60, 0.8);
+  color: rgba(235, 235, 245, 0.42);
+  transition: background 220ms cubic-bezier(0.16, 1, 0.3, 1), color 220ms ease, box-shadow 220ms ease;
+}
+
+.top-phase-tab .top-phase-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: rgba(235, 235, 245, 0.42);
+  transition: color 220ms ease, font-weight 220ms ease;
+  letter-spacing: -0.01em;
+}
+
+.top-phase-tab:hover .top-phase-title {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.top-phase-tab.is-active .top-phase-badge {
+  background: #0071e3;
+  color: #ffffff;
+  box-shadow: 0 1px 6px rgba(0, 113, 227, 0.45);
+}
+
+.top-phase-tab.is-active .top-phase-title {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.top-phase-divider {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 12.5px;
+  font-weight: 300;
+  margin-inline: 2px;
+  user-select: none;
+}
+
+.top-phase-restart {
+  border: 0;
+  background: rgba(58, 58, 60, 0.85);
+  color: rgba(245, 245, 247, 0.88);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 99px;
+  cursor: pointer;
+  transition: background 180ms ease, color 180ms ease, transform 120ms ease;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.top-phase-restart:hover {
+  background: rgba(72, 72, 74, 0.95);
+  color: #ffffff;
+}
+
+.top-phase-restart:active {
+  transform: scale(0.96);
+}
+
+@media(max-width: 480px) {
+  .top-phase-nav {
+    padding-inline: 14px;
+  }
+  .top-phase-tab .top-phase-title {
+    font-size: 12.5px;
+  }
+  .top-phase-restart {
+    padding: 4px 10px;
+    font-size: 11.5px;
+  }
+}

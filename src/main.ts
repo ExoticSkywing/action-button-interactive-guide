@@ -15,9 +15,21 @@ root.innerHTML = `
   FORM: Operate mode, official Apple reference canon, seed APPLE-BEZEL-V4. FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md.
   -->
   <main class="experience-shell" data-tutorial-app hidden>
-    <nav class="localnav" aria-label="产品导航">
-      <strong tabindex="-1" data-tutorial-heading>iPhone 17 Pro</strong>
-      <div><button type="button" class="explore" data-change-platform>选择设备</button><button type="button" class="buy" data-primary-action>重新开始</button></div>
+    <nav class="top-phase-nav" aria-label="教程阶段导航">
+      <div class="top-phase-tabs">
+        <button type="button" class="top-phase-tab is-active" data-phase-tab="0" aria-label="阶段一：退出旧账户">
+          <span class="top-phase-badge">01</span>
+          <span class="top-phase-title">退出旧账户</span>
+        </button>
+        <span class="top-phase-divider" aria-hidden="true">/</span>
+        <button type="button" class="top-phase-tab" data-phase-tab="1" aria-label="阶段二：登录新账户">
+          <span class="top-phase-badge">02</span>
+          <span class="top-phase-title">登录新账户</span>
+        </button>
+      </div>
+      <div class="top-phase-actions">
+        <button type="button" class="top-phase-restart" data-primary-action aria-label="重新开始教程">重新开始</button>
+      </div>
     </nav>
 
     <section id="tutorial" class="viewer" data-mode="expanded" data-phase="0" aria-label="操作按钮分步教程">
@@ -125,8 +137,8 @@ function supportsGridScan() {
 }
 const tutorialApp = document.querySelector<HTMLElement>('[data-tutorial-app]')!;
 const gatewayTitle = document.querySelector<HTMLElement>('#gateway-title')!;
-const tutorialHeading = document.querySelector<HTMLElement>('[data-tutorial-heading]')!;
-const changePlatform = document.querySelector<HTMLButtonElement>('[data-change-platform]')!;
+const tutorialHeading = document.querySelector<HTMLElement>('[data-tutorial-heading]');
+const changePlatform = document.querySelector<HTMLButtonElement>('[data-change-platform]');
 const viewer = document.querySelector<HTMLElement>('.viewer')!;
 const screen = document.querySelector<HTMLElement>('[data-screen]')!;
 const status = document.querySelector<HTMLElement>('[data-status]')!;
@@ -262,6 +274,10 @@ function renderStep(index: number, animate = true, announce = true) {
   });
   const currentPhase = current >= 5 ? 1 : 0;
   viewer.dataset.phase = String(currentPhase);
+  document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
+    const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
+    tab.classList.toggle('is-active', p === currentPhase);
+  });
   if (paddlePrev) {
     paddlePrev.disabled = currentPhase === 0;
     paddlePrev.classList.toggle('is-hidden', currentPhase === 0);
@@ -491,7 +507,7 @@ primaryAction.addEventListener('click', () => {
   resetStep(0);
   document.querySelector('#tutorial')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
-changePlatform.addEventListener('click', () => {
+changePlatform?.addEventListener('click', () => {
   history.pushState(null, '', `${location.pathname}${location.search}`);
   syncRoute(true);
 });
@@ -514,6 +530,14 @@ document.addEventListener('keydown', (event) => {
     event.preventDefault();
     requestStep(event.key === 'Home' ? 0 : steps.length - 1);
   }
+});
+
+document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
+  tab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
+    switchPhase(p);
+  });
 });
 
 function switchPhase(targetPhase: number, triggerTransition = true) {
@@ -619,7 +643,7 @@ function syncRoute(moveFocus = false) {
   document.documentElement.dataset.route = showTutorial ? 'ios' : 'platforms';
   document.title = showTutorial ? 'iPhone 17 Pro · 操作按钮教程' : '选择设备 · 设备操作教程';
   document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', showTutorial ? '#000000' : '#07080a');
-  if (moveFocus) (showTutorial ? tutorialHeading : gatewayTitle).focus({ preventScroll: true });
+  if (moveFocus) (showTutorial ? (tutorialHeading ?? viewer) : gatewayTitle).focus({ preventScroll: true });
 }
 
 window.addEventListener('hashchange', () => syncRoute(true));
