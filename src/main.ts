@@ -1,5 +1,5 @@
 import './style.css';
-import { chevron, closeIcon, screenNodes, steps } from './tutorial-content';
+import { chevron, screenNodes, steps } from './tutorial-content';
 import type { GridScanController } from './grid-scan';
 import { renderPlatformGateway } from './platform-navigation';
 
@@ -33,7 +33,6 @@ root.innerHTML = `
     </nav>
 
     <section id="tutorial" class="viewer" data-mode="expanded" data-phase="0" aria-label="操作按钮分步教程">
-      <button class="close-control" type="button" data-close aria-label="关闭教程">${closeIcon}</button>
 
       <div class="product-composition">
         <nav class="function-rail" aria-label="教程步骤">
@@ -164,7 +163,7 @@ const hud = document.querySelector<HTMLElement>('[data-hud]')!;
 const paddlePrev = document.querySelector<HTMLButtonElement>('[data-paddlenav="prev"]');
 const paddleNext = document.querySelector<HTMLButtonElement>('[data-paddlenav="next"]');
 const functionRail = document.querySelector<HTMLElement>('.function-rail')!;
-const closeControl = document.querySelector<HTMLButtonElement>('[data-close]')!;
+const closeControl = document.querySelector<HTMLButtonElement>('[data-close]');
 const restoreControl = document.querySelector<HTMLButtonElement>('[data-restore]')!;
 const railViewport = document.querySelector<HTMLElement>('[data-rail-viewport]')!;
 const railTrack = document.querySelector<HTMLElement>('[data-rail-track]')!;
@@ -440,7 +439,7 @@ function cancelActiveTransition() {
 
 function syncModeAccessibility() {
   const collapsed = mode === 'collapsed';
-  for (const element of [functionRail, hud, closeControl]) {
+  for (const element of [functionRail, hud, closeControl].filter(Boolean) as HTMLElement[]) {
     element.inert = collapsed;
     element.setAttribute('aria-hidden', String(collapsed));
   }
@@ -516,7 +515,7 @@ railViewport.addEventListener('pointercancel', () => {
   dragPointerId = null;
   draggingRail = false;
 });
-closeControl.addEventListener('click', () => setMode('collapsed'));
+closeControl?.addEventListener('click', () => setMode('collapsed'));
 restoreControl.addEventListener('click', () => setMode('expanded'));
 primaryAction.addEventListener('click', () => {
   setMode('expanded');
