@@ -88,6 +88,18 @@ root.innerHTML = `
       
       <!-- Apple 官方 1:1 底部 Dock 画廊切换控制器 -->
       <div class="gallery-dock" data-gallery-dock aria-label="教程阶段画廊">
+        <!-- 阶段里程碑 / 底部 Dock 左右滑动与点击教学提示 (Dock Swipe & Tap Coachmark) -->
+        <div class="dock-swipe-coachmark" data-dock-coachmark aria-live="polite">
+          <div class="swipe-cue-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 20" width="28" height="18" fill="none">
+              <path class="cue-arrow-l" d="M7 10l3-3M7 10l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <path class="cue-track" d="M8 10h16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.6"/>
+              <path class="cue-arrow-r" d="M25 10l-3-3M25 10l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              <circle class="cue-hand-dot" cx="16" cy="10" r="3.5" fill="#2997ff"/>
+            </svg>
+          </div>
+          <span class="swipe-cue-text">可左右滑动卡片，或轻点 <strong>›</strong></span>
+        </div>
         <button type="button" class="paddlenav-button paddlenav-prev" data-paddlenav="prev" aria-label="上一阶段：退出旧账户" disabled>
           <span class="paddlenav-icon">
             <svg class="icon-control" viewBox="0 0 36 36" aria-hidden="true">
@@ -169,6 +181,8 @@ const railViewport = document.querySelector<HTMLElement>('[data-rail-viewport]')
 const railTrack = document.querySelector<HTMLElement>('[data-rail-track]')!;
 const metalFxAnchor = document.querySelector<HTMLElement>('.metal-fx-anchor')!;
 const railCoachmark = document.querySelector<HTMLElement>('[data-rail-coachmark]')!;
+const dockCoachmark = document.querySelector<HTMLElement>('[data-dock-coachmark]');
+let dockLearned = false;
 const gestureCopy = document.querySelector<HTMLElement>('[data-gesture-copy]')!;
 const primaryAction = document.querySelector<HTMLButtonElement>('[data-primary-action]')!;
 const storageKey = 'apple-bezel-tutorial-v4.1';
@@ -288,13 +302,23 @@ function renderStep(index: number, animate = true, announce = true) {
     const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
     tab.classList.toggle('is-active', p === 0);
   });
+  const isLastStep = current === steps.length - 1;
   if (paddlePrev) {
-    paddlePrev.disabled = true;
-    paddlePrev.classList.add('is-hidden');
+    paddlePrev.disabled = current === 0;
+    paddlePrev.classList.toggle('is-hidden', current === 0);
   }
   if (paddleNext) {
-    paddleNext.disabled = true;
-    paddleNext.classList.add('is-hidden');
+    paddleNext.disabled = false;
+    paddleNext.classList.remove('is-hidden');
+    paddleNext.classList.toggle('pulse-cue', isLastStep && !dockLearned);
+  }
+  if (dockCoachmark) {
+    dockCoachmark.classList.toggle('is-visible', isLastStep && !dockLearned);
+  }
+  if (isLastStep && !dockLearned) {
+    hud.classList.add('dock-nudge-active');
+  } else {
+    hud.classList.remove('dock-nudge-active');
   }
   stepCount.textContent = `第 ${current + 1} 步，共 ${steps.length} 步`;
   stepCurrent.textContent = String(current + 1);
@@ -561,7 +585,25 @@ function switchPhase(targetPhase: number, triggerTransition = true) {
 }
 
 paddlePrev?.addEventListener('click', () => switchPhase(0));
-paddleNext?.addEventListener('click', () => switchPhase(1));
+paddleNext?.addEventListener('click', () => {
+  dockLearned = true;
+  dockCoachmark?.classList.remove('is-visible');
+  paddleNext.classList.remove('pulse-cue');
+  hud.classList.remove('dock-nudge-active');
+  if (current < steps.length - 1) {
+    requestStep(current + 1);
+  } else {
+    switchPhase(1);
+  }
+});
+
+paddlePrev?.addEventListener('click', () => {
+  if (current > 0) {
+    requestStep(current - 1);
+  } else {
+    switchPhase(0);
+  }
+});
 
 let dockTouchStartX = 0;
 let dockTouchStartY = 0;
