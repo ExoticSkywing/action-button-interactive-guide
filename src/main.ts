@@ -283,19 +283,18 @@ function renderStep(index: number, animate = true, announce = true) {
     button.setAttribute('aria-pressed', String(selected));
     button.tabIndex = selected ? 0 : -1;
   });
-  const currentPhase = current >= 5 ? 1 : 0;
-  viewer.dataset.phase = String(currentPhase);
+  viewer.dataset.phase = '0';
   document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
     const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
-    tab.classList.toggle('is-active', p === currentPhase);
+    tab.classList.toggle('is-active', p === 0);
   });
   if (paddlePrev) {
-    paddlePrev.disabled = currentPhase === 0;
-    paddlePrev.classList.toggle('is-hidden', currentPhase === 0);
+    paddlePrev.disabled = true;
+    paddlePrev.classList.add('is-hidden');
   }
   if (paddleNext) {
-    paddleNext.disabled = currentPhase === 1;
-    paddleNext.classList.toggle('is-hidden', currentPhase === 1);
+    paddleNext.disabled = true;
+    paddleNext.classList.add('is-hidden');
   }
   stepCount.textContent = `第 ${current + 1} 步，共 ${steps.length} 步`;
   stepCurrent.textContent = String(current + 1);
@@ -557,9 +556,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) =
 
 function switchPhase(targetPhase: number, triggerTransition = true) {
   if (targetPhase === 0) {
-    if (current >= 5) renderStep(0, triggerTransition);
-  } else {
-    if (current < 5) renderStep(5, triggerTransition);
+    renderStep(0, triggerTransition);
   }
 }
 
@@ -580,10 +577,10 @@ function finishDockDrag(x: number, y: number) {
   const dy = y - dockTouchStartY;
   const dt = Date.now() - dockTouchStartTime;
   if (Math.abs(dx) > Math.abs(dy) * 1.1 && Math.abs(dx) > 25 && dt < 800) {
-    if (dx < 0 && current < 5) {
-      switchPhase(1);
-    } else if (dx > 0 && current >= 5) {
-      switchPhase(0);
+    if (dx < 0 && current < steps.length - 1) {
+      renderStep(current + 1);
+    } else if (dx > 0 && current > 0) {
+      renderStep(current - 1);
     }
   }
 }

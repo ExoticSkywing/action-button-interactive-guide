@@ -25,8 +25,6 @@ const steps: TutorialStep[] = [
   { id: 'select-translate', label: '媒体与购买项目', title: '进入“媒体与购买项目”', body: '在个人的 apple 账户页面，点击媒体与购买项目选项。', proof: '', hudProof: '', screen: 'translate', icon: icons.translate },
   { id: 'hold-to-finish', label: '退出登录', title: '退出登录“媒体与购买项目”', body: '点击退出登录，⚠️严格保证你的实际操作与前面步骤一致，并再次检查是从媒体与购买项目进来的，确认后退出登录。', proof: '', hudProof: '', screen: 'complete', icon: icons.complete },
   { id: 'confirm-signout', label: '再次确认退出', title: '再次确认“退出登录”', body: '在弹出的提示中，点击“退出登录”。若未出现“再次确认”提示，可跳过此步。', proof: '', hudProof: '', screen: 'confirmSignout', icon: icons.confirmSignout },
-  { id: 'prepare-new-account', label: '准备登入', title: '准备登入新的Apple账户', body: '在做第3步点击媒体与购买项目之前，建议先做1,2两步，以免直接点击第3步没有任何反应。', proof: '', hudProof: '', screen: 'signedOutMedia', icon: icons.signedOutMedia },
-  { id: 'choose-other-identity', label: '选择其他身份', title: '选择其他身份（Apple账户）', body: '如屏幕上点击第二个选项，以此来使用其他 Apple ID账户登录。', proof: '', hudProof: '', screen: 'identityChoice', icon: icons.identityChoice },
 ];
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
