@@ -5,7 +5,7 @@ type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'signedOutMedia' | 'identityChoice';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'signedOutMedia' | 'identityChoice' | 'appleidService';
   icon: string;
 };
 
@@ -17,6 +17,7 @@ const icons = {
   confirmSignout: '<img class="rail-icon-image" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false">',
   signedOutMedia: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
   identityChoice: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
+  appleLogo: '<img class="rail-icon-image" src="/media/rail-apple-logo.svg" alt="Apple" draggable="false">',
 };
 
 const steps: TutorialStep[] = [
@@ -25,6 +26,7 @@ const steps: TutorialStep[] = [
   { id: 'select-translate', label: '媒体与购买项目', title: '进入“媒体与购买项目”', body: '在个人的 apple 账户页面，点击媒体与购买项目选项。', proof: '', hudProof: '', screen: 'translate', icon: icons.translate },
   { id: 'hold-to-finish', label: '退出登录', title: '退出登录“媒体与购买项目”', body: '点击退出登录，⚠️严格保证你的实际操作与前面步骤一致，并再次检查是从媒体与购买项目进来的，确认后退出登录。', proof: '', hudProof: '', screen: 'complete', icon: icons.complete },
   { id: 'confirm-signout', label: '再次确认退出', title: '再次确认“退出登录”', body: '在弹出的提示中，点击“退出登录”。若未出现“再次确认”提示，可跳过此步。', proof: '', hudProof: '', screen: 'confirmSignout', icon: icons.confirmSignout },
+  { id: 'open-appleid-service', label: '分发服务', title: '打开 appleid.1yo.cc', body: '打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。', proof: '', hudProof: '', screen: 'appleidService', icon: icons.appleLogo },
 ];
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
@@ -61,6 +63,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   identityChoice: () => `
     <div class="phone-ui identity-choice-ui" data-screen-state="identityChoice">
       <img class="identity-choice-screen-image" src="/media/screens/apple-account-identity-choice-user.jpg" alt="" draggable="false">
+    </div>`,
+  appleidService: () => `
+    <div class="phone-ui appleid-service-ui" data-screen-state="appleidService" aria-label="appleid.1yo.cc 引导界面">
+      <img class="appleid-service-screen-image" src="/media/screens/appleid-service-step1-user.jpg" alt="" draggable="false">
     </div>`,
 };
 

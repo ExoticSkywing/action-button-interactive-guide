@@ -286,37 +286,49 @@ function renderStep(index: number, animate = true, announce = true) {
     button.setAttribute('aria-pressed', String(selected));
     button.tabIndex = selected ? 0 : -1;
   });
-  viewer.dataset.phase = '0';
+  const isPhaseTwo = current >= 5;
+  const phase = isPhaseTwo ? 1 : 0;
+  viewer.dataset.phase = String(phase);
   document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
     const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
-    tab.classList.toggle('is-active', p === 0);
+    tab.classList.toggle('is-active', p === phase);
   });
-  const isLastStep = current === steps.length - 1;
-  // 第一阶段（阶段0：退出旧账户）绝对不出现左箭头
+  const isPhaseOneLastStep = current === 4;
   if (paddlePrev) {
     paddlePrev.disabled = true;
     paddlePrev.classList.add('is-hidden');
   }
-  // 右侧向右箭头：阶段一终点时自然显现，提供明确的推进通道
   if (paddleNext) {
-    paddleNext.disabled = false;
-    paddleNext.classList.remove('is-hidden');
+    if (isPhaseTwo) {
+      paddleNext.classList.add('is-hidden');
+    } else {
+      paddleNext.disabled = false;
+      paddleNext.classList.remove('is-hidden');
+    }
   }
   if (dockCoachmark) {
-    dockCoachmark.classList.toggle('is-visible', isLastStep && !dockLearned);
+    dockCoachmark.classList.toggle('is-visible', isPhaseOneLastStep && !dockLearned);
   }
-  if (isLastStep && !dockLearned) {
+  if (isPhaseOneLastStep && !dockLearned) {
     hud.classList.add('dock-nudge-active');
   } else {
     hud.classList.remove('dock-nudge-active');
   }
-  stepCount.textContent = `第 ${current + 1} 步，共 ${steps.length} 步`;
-  stepCurrent.textContent = String(current + 1);
   const badgeNum = document.querySelector<HTMLElement>('[data-step-badge-num]');
-  if (badgeNum) {
-    badgeNum.textContent = String(current + 1);
+  if (isPhaseTwo) {
+    railLearned = true;
+    functionRail.classList.remove('teaching');
+    viewer.classList.remove('teaching-rail');
+    stepCount.textContent = '阶段二：第 1 步';
+    stepCurrent.textContent = '1';
+    stepTotal.textContent = '1';
+    if (badgeNum) badgeNum.textContent = '1';
+  } else {
+    stepCount.textContent = `第 ${current + 1} 步，共 5 步`;
+    stepCurrent.textContent = String(current + 1);
+    stepTotal.textContent = '5';
+    if (badgeNum) badgeNum.textContent = String(current + 1);
   }
-  stepTotal.textContent = String(steps.length);
   const complete = current === steps.length - 1;
   stepTitle.textContent = step.title;
   if (current === 0) {
@@ -336,7 +348,16 @@ function renderStep(index: number, animate = true, announce = true) {
   } else if (current === 4) {
     stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
   } else if (current === 5) {
-    stepBody.innerHTML = '在做<span class="hud-note-step-three">第3步</span>点击<span class="hud-relogin-target"><img class="hud-inline-relogin-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-relogin-media">媒体与购买项目</span></span>之前，建议先做<span class="hud-note-prior-steps">1,2两步</span>，以免直接点击<span class="hud-note-step-three">第3步</span><span class="hud-note-no-response">没有任何反应</span>。';
+    stepBody.innerHTML = `
+      <p class="hud-body-lead">打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。</p>
+      <div class="hud-launch-action">
+        <a class="hud-launch-button" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer" aria-label="立即在新标签页打开 appleid.1yo.cc">
+          <svg class="hud-launch-globe" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <span>立即前往 appleid.1yo.cc</span>
+          <svg class="hud-launch-arrow" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 12L12 4M6 4h6v6"/></svg>
+        </a>
+      </div>
+    `;
   } else if (current === 6) {
     stepBody.innerHTML = '如屏幕上点击<span class="hud-note-second-option">第二个选项</span>，以此来使用<span class="hud-other-account-target">其他<img class="hud-inline-other-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-other-account">Apple ID账户</span></span>登录。';
   }
@@ -570,22 +591,9 @@ document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) =
 
 function switchPhase(targetPhase: number, triggerTransition = true) {
   if (targetPhase === 0) {
-    renderStep(steps.length - 1, triggerTransition);
+    renderStep(4, triggerTransition);
   } else if (targetPhase === 1) {
-    viewer.dataset.phase = '1';
-    document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
-      const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
-      tab.classList.toggle('is-active', p === 1);
-    });
-    if (paddleNext) {
-      paddleNext.classList.add('is-hidden');
-    }
-    stepCount.textContent = '阶段二：准备登录新账户';
-    stepCurrent.textContent = '1';
-    stepTotal.textContent = '1';
-    stepTitle.textContent = '阶段二：登录新账户';
-    stepBody.textContent = '已成功退出旧 Apple ID。轻点设置顶部的“登录 iPhone”，即可使用新的 Apple 账户登录。';
-    status.textContent = '已进入阶段二：登录新账户。';
+    renderStep(5, triggerTransition);
   }
 }
 
@@ -628,17 +636,15 @@ function finishDockDrag(x: number, y: number) {
       dockLearned = true;
       dockCoachmark?.classList.remove('is-visible');
       hud.classList.remove('dock-nudge-active');
-      if (viewer.dataset.phase === '0') {
-        if (current < steps.length - 1) {
-          requestStep(current + 1);
-        } else {
-          switchPhase(1);
-        }
+      if (current < 4) {
+        requestStep(current + 1);
+      } else if (current === 4) {
+        requestStep(5);
       }
     } else if (dx > 0) {
       // 向右轻扫 (Swipe Right): 返回上一步，或从阶段二返回阶段一
-      if (viewer.dataset.phase === '1') {
-        switchPhase(0);
+      if (current === 5) {
+        requestStep(4);
       } else if (current > 0) {
         requestStep(current - 1);
       }
