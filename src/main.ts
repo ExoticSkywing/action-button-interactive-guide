@@ -86,42 +86,38 @@ root.innerHTML = `
 
       <span class="hud-attention-cue ann ann-s ann-no-mark" data-note="↓" aria-hidden="true"></span>
       
-      <!-- Apple 官方 1:1 底部 Dock 画廊切换控制器 -->
+      <!-- Apple 官方 1:1 底部 Dock 画廊切换控制器 (内嵌式绝对对称平衡架构) -->
       <div class="gallery-dock" data-gallery-dock aria-label="教程阶段画廊">
-        <!-- 阶段里程碑 / 底部 Dock 左右滑动与点击教学提示 (遵循 better-ui & better-writing) -->
-        <div class="dock-swipe-coachmark" data-dock-coachmark aria-live="polite">
-          <span class="swipe-cue-tag">提示</span>
-          <span class="swipe-cue-text">可左右轻扫卡片，或轻点右侧 <strong>›</strong></span>
-        </div>
-        <button type="button" class="paddlenav-button paddlenav-prev" data-paddlenav="prev" aria-label="上一阶段：退出旧账户" disabled>
-          <span class="paddlenav-icon">
-            <svg class="icon-control" viewBox="0 0 36 36" aria-hidden="true">
-              <path d="m20 25c-.3838 0-.7676-.1465-1.0605-.4395l-5.5-5.5c-.5859-.5854-.5859-1.5356 0-2.1211l5.5-5.5c.5859-.5859 1.5352-.5859 2.1211 0 .5859.5854.5859 1.5356 0 2.1211l-4.4395 4.4395 4.4395 4.4395c.5859.5854.5859 1.5356 0 2.1211-.293.293-.6768.4395-1.0605.4395z"></path>
-            </svg>
-          </span>
-        </button>
-
-        <article class="tutorial-hud" data-hud data-beam="tutorial-hud" data-active>
-          <span class="hud-beam-inner" aria-hidden="true"></span>
-          <span class="hud-beam-stroke" aria-hidden="true"></span>
-          <span class="hud-beam-bloom" data-beam-bloom aria-hidden="true"></span>
-          <div class="hud-copy">
-            <div class="hud-heading">
-              <p class="hud-step"><span data-step-current></span><span aria-hidden="true">/</span><span data-step-total></span><span class="sr-only" data-step-count></span></p>
-              <p class="hud-title" data-step-title></p>
-            </div>
-            <p class="hud-body" data-step-body></p>
-            <p class="hud-proof"><span class="hud-proof-mark" aria-hidden="true">✓</span><span data-step-proof></span></p>
+        <div class="dock-content-wrap">
+          <!-- 阶段里程碑 / 居中对齐卡片正上方的轻扫教学提示 -->
+          <div class="dock-swipe-coachmark" data-dock-coachmark aria-live="polite">
+            <span class="swipe-cue-tag">提示</span>
+            <span class="swipe-cue-text">可左右轻扫卡片，或点击右侧 <strong>›</strong></span>
           </div>
-        </article>
 
-        <button type="button" class="paddlenav-button paddlenav-next" data-paddlenav="next" aria-label="下一阶段：登录新账户">
-          <span class="paddlenav-icon">
-            <svg class="icon-control" viewBox="0 0 36 36" aria-hidden="true">
-              <path d="m16 25c-.293 0-.6768-.1465-1.0605-.4395-.5859-.5854-.5859-1.5356 0-2.1211l4.4395-4.4395-4.4395-4.4395c-.5859-.5854-.5859-1.5356 0-2.1211.5859-.5859 1.5352-.5859 2.1211 0l5.5 5.5c.5859.5854.5859 1.5356 0 2.1211l-5.5 5.5c-.293.293-.6768.4395-1.0606.4395z"></path>
-            </svg>
-          </span>
-        </button>
+          <article class="tutorial-hud" data-hud data-beam="tutorial-hud" data-active>
+            <span class="hud-beam-inner" aria-hidden="true"></span>
+            <span class="hud-beam-stroke" aria-hidden="true"></span>
+            <span class="hud-beam-bloom" data-beam-bloom aria-hidden="true"></span>
+            <div class="hud-copy">
+              <div class="hud-heading">
+                <p class="hud-step"><span data-step-current></span><span aria-hidden="true">/</span><span data-step-total></span><span class="sr-only" data-step-count></span></p>
+                <p class="hud-title" data-step-title></p>
+              </div>
+              <p class="hud-body" data-step-body></p>
+              <p class="hud-proof"><span class="hud-proof-mark" aria-hidden="true">✓</span><span data-step-proof></span></p>
+            </div>
+
+            <!-- 内嵌在卡片内部右侧的操作圆钮，确保卡片自身 100% 水平全宽绝对居中对称 -->
+            <button type="button" class="paddlenav-button paddlenav-next" data-paddlenav="next" aria-label="下一阶段：登录新账户">
+              <span class="paddlenav-icon">
+                <svg class="icon-control" viewBox="0 0 36 36" aria-hidden="true">
+                  <path d="m16 25c-.293 0-.6768-.1465-1.0605-.4395-.5859-.5854-.5859-1.5356 0-2.1211l4.4395-4.4395-4.4395-4.4395c-.5859-.5854-.5859-1.5356 0-2.1211.5859-.5859 1.5352-.5859 2.1211 0l5.5 5.5c.5859.5854.5859 1.5356 0 2.1211l-5.5 5.5c-.293.293-.6768.4395-1.0606.4395z"></path>
+                </svg>
+              </span>
+            </button>
+          </article>
+        </div>
       </div>
 
       <button class="restore-control" type="button" data-restore aria-label="继续教程"><span>继续教程</span>${chevron('right')}</button>
