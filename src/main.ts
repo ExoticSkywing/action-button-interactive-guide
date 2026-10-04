@@ -88,17 +88,10 @@ root.innerHTML = `
       
       <!-- Apple 官方 1:1 底部 Dock 画廊切换控制器 -->
       <div class="gallery-dock" data-gallery-dock aria-label="教程阶段画廊">
-        <!-- 阶段里程碑 / 底部 Dock 左右滑动与点击教学提示 (Dock Swipe & Tap Coachmark) -->
+        <!-- 阶段里程碑 / 底部 Dock 左右滑动与点击教学提示 (遵循 better-ui & better-writing) -->
         <div class="dock-swipe-coachmark" data-dock-coachmark aria-live="polite">
-          <div class="swipe-cue-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 20" width="28" height="18" fill="none">
-              <path class="cue-arrow-l" d="M7 10l3-3M7 10l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <path class="cue-track" d="M8 10h16" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.6"/>
-              <path class="cue-arrow-r" d="M25 10l-3-3M25 10l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-              <circle class="cue-hand-dot" cx="16" cy="10" r="3.5" fill="#2997ff"/>
-            </svg>
-          </div>
-          <span class="swipe-cue-text">可左右滑动卡片，或轻点 <strong>›</strong></span>
+          <span class="swipe-cue-tag">提示</span>
+          <span class="swipe-cue-text">可左右轻扫卡片，或轻点右侧 <strong>›</strong></span>
         </div>
         <button type="button" class="paddlenav-button paddlenav-prev" data-paddlenav="prev" aria-label="上一阶段：退出旧账户" disabled>
           <span class="paddlenav-icon">
@@ -303,14 +296,15 @@ function renderStep(index: number, animate = true, announce = true) {
     tab.classList.toggle('is-active', p === 0);
   });
   const isLastStep = current === steps.length - 1;
+  // 第一阶段（阶段0：退出旧账户）绝对不出现左箭头
   if (paddlePrev) {
-    paddlePrev.disabled = current === 0;
-    paddlePrev.classList.toggle('is-hidden', current === 0);
+    paddlePrev.disabled = true;
+    paddlePrev.classList.add('is-hidden');
   }
+  // 右侧向右箭头：阶段一终点时自然显现，提供明确的推进通道
   if (paddleNext) {
     paddleNext.disabled = false;
     paddleNext.classList.remove('is-hidden');
-    paddleNext.classList.toggle('pulse-cue', isLastStep && !dockLearned);
   }
   if (dockCoachmark) {
     dockCoachmark.classList.toggle('is-visible', isLastStep && !dockLearned);
@@ -588,7 +582,6 @@ paddlePrev?.addEventListener('click', () => switchPhase(0));
 paddleNext?.addEventListener('click', () => {
   dockLearned = true;
   dockCoachmark?.classList.remove('is-visible');
-  paddleNext.classList.remove('pulse-cue');
   hud.classList.remove('dock-nudge-active');
   if (current < steps.length - 1) {
     requestStep(current + 1);
