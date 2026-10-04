@@ -92,7 +92,7 @@ root.innerHTML = `
           <!-- 阶段里程碑 / 居中对齐卡片正上方的轻扫教学提示 -->
           <div class="dock-swipe-coachmark" data-dock-coachmark aria-live="polite">
             <span class="swipe-cue-tag">提示</span>
-            <span class="swipe-cue-text">可左右轻扫卡片，或点击右侧 <strong>›</strong></span>
+            <span class="swipe-cue-text">向左轻扫卡片，或点击右侧 <strong>›</strong></span>
           </div>
 
           <article class="tutorial-hud" data-hud data-beam="tutorial-hud" data-active>
@@ -570,7 +570,22 @@ document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) =
 
 function switchPhase(targetPhase: number, triggerTransition = true) {
   if (targetPhase === 0) {
-    renderStep(0, triggerTransition);
+    renderStep(steps.length - 1, triggerTransition);
+  } else if (targetPhase === 1) {
+    viewer.dataset.phase = '1';
+    document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
+      const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
+      tab.classList.toggle('is-active', p === 1);
+    });
+    if (paddleNext) {
+      paddleNext.classList.add('is-hidden');
+    }
+    stepCount.textContent = '阶段二：准备登录新账户';
+    stepCurrent.textContent = '1';
+    stepTotal.textContent = '1';
+    stepTitle.textContent = '阶段二：登录新账户';
+    stepBody.textContent = '已成功退出旧 Apple ID。轻点设置顶部的“登录 iPhone”，即可使用新的 Apple 账户登录。';
+    status.textContent = '已进入阶段二：登录新账户。';
   }
 }
 
@@ -608,10 +623,25 @@ function finishDockDrag(x: number, y: number) {
   const dy = y - dockTouchStartY;
   const dt = Date.now() - dockTouchStartTime;
   if (Math.abs(dx) > Math.abs(dy) * 1.1 && Math.abs(dx) > 25 && dt < 800) {
-    if (dx < 0 && current < steps.length - 1) {
-      renderStep(current + 1);
-    } else if (dx > 0 && current > 0) {
-      renderStep(current - 1);
+    if (dx < 0) {
+      // 向左轻扫 (Swipe Left): 推进到下一步，或在终点进入下一阶段
+      dockLearned = true;
+      dockCoachmark?.classList.remove('is-visible');
+      hud.classList.remove('dock-nudge-active');
+      if (viewer.dataset.phase === '0') {
+        if (current < steps.length - 1) {
+          requestStep(current + 1);
+        } else {
+          switchPhase(1);
+        }
+      }
+    } else if (dx > 0) {
+      // 向右轻扫 (Swipe Right): 返回上一步，或从阶段二返回阶段一
+      if (viewer.dataset.phase === '1') {
+        switchPhase(0);
+      } else if (current > 0) {
+        requestStep(current - 1);
+      }
     }
   }
 }
