@@ -1,33 +1,60 @@
-type TutorialStep = {
+export type TutorialStep = {
   id: string;
   label: string;
   title: string;
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'signedOutMedia' | 'identityChoice' | 'appleidService';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService';
   icon: string;
 };
 
-const icons = {
-  railSettings: '<img class="rail-icon-image" src="/media/rail-settings-apple.png" alt="" draggable="false">',
-  action: '<img class="rail-icon-image" src="/media/rail-action-apple.png" alt="" draggable="false">',
-  translate: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
-  complete: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
-  confirmSignout: '<img class="rail-icon-image" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false">',
-  signedOutMedia: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
-  identityChoice: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="" draggable="false">',
-  appleLogo: '<img class="rail-icon-image" src="/media/rail-apple-logo.svg" alt="Apple" draggable="false">',
+export type TutorialPhase = {
+  id: string;
+  name: string;
+  title: string;
+  steps: TutorialStep[];
 };
 
-const steps: TutorialStep[] = [
+const icons = {
+  railSettings: '<img class="rail-icon-image" src="/media/rail-settings-apple.png" alt="设置" draggable="false">',
+  action: '<img class="rail-icon-image" src="/media/rail-action-apple.png" alt="Apple账户" draggable="false">',
+  translate: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="媒体与购买" draggable="false">',
+  complete: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="退出登录" draggable="false">',
+  confirmSignout: '<img class="rail-icon-image" src="/media/rail-signout-confirm-icons8.png" alt="确认退出" draggable="false">',
+  appleLogo: '<img class="rail-icon-image" src="/media/rail-apple-logo.svg" alt="Apple服务" draggable="false">',
+};
+
+// 第一阶段：退出旧账户（严格 5 步闭环）
+export const phase1Steps: TutorialStep[] = [
   { id: 'open-settings', label: '打开设置', title: '打开“设置”', body: '打开你 iPhone 上的设置。', proof: '看到“设置”页面，即可继续。', hudProof: '', screen: 'settings', icon: icons.railSettings },
   { id: 'choose-action', label: '选择操作按钮', title: '进入“Apple 账户”', body: '进入设置页面后，轻点顶部的头像，进入你的“Apple 账户”。', proof: '', hudProof: '', screen: 'action', icon: icons.action },
   { id: 'select-translate', label: '媒体与购买项目', title: '进入“媒体与购买项目”', body: '在个人的 apple 账户页面，点击媒体与购买项目选项。', proof: '', hudProof: '', screen: 'translate', icon: icons.translate },
   { id: 'hold-to-finish', label: '退出登录', title: '退出登录“媒体与购买项目”', body: '点击退出登录，⚠️严格保证你的实际操作与前面步骤一致，并再次检查是从媒体与购买项目进来的，确认后退出登录。', proof: '', hudProof: '', screen: 'complete', icon: icons.complete },
   { id: 'confirm-signout', label: '再次确认退出', title: '再次确认“退出登录”', body: '在弹出的提示中，点击“退出登录”。若未出现“再次确认”提示，可跳过此步。', proof: '', hudProof: '', screen: 'confirmSignout', icon: icons.confirmSignout },
-  { id: 'open-appleid-service', label: '分发服务', title: '打开 appleid.1yo.cc', body: '打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。', proof: '', hudProof: '', screen: 'appleidService', icon: icons.appleLogo },
 ];
+
+// 第二阶段：登录新账户（当前第一步：打开分发服务引导）
+export const phase2Steps: TutorialStep[] = [
+  {
+    id: 'open-appleid-service',
+    label: '苹果分发服务',
+    title: '打开 appleid.1yo.cc',
+    body: '打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。',
+    proof: '',
+    hudProof: '',
+    screen: 'appleidService',
+    icon: icons.appleLogo
+  }
+];
+
+export const phases: TutorialPhase[] = [
+  { id: 'phase-signout', name: '01 退出旧账户', title: '退出旧账户', steps: phase1Steps },
+  { id: 'phase-signin', name: '02 登录新账户', title: '登录新账户', steps: phase2Steps }
+];
+
+// 兼容全局引用
+export const steps: TutorialStep[] = [...phase1Steps, ...phase2Steps];
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
 const closeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
@@ -56,14 +83,6 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
     <div class="phone-ui confirm-signout-ui" data-screen-state="confirmSignout" aria-label="退出登录确认弹窗">
       <img class="media-signout-confirm-screen-image" src="/media/screens/media-signout-confirm-user.jpg" alt="" draggable="false">
     </div>`,
-  signedOutMedia: () => `
-    <div class="phone-ui signed-out-media-ui" data-screen-state="signedOutMedia" aria-label="退出登录后的 Apple 账户页面">
-      <img class="media-signed-out-screen-image" src="/media/screens/media-signed-out-account-user.jpg" alt="" draggable="false">
-    </div>`,
-  identityChoice: () => `
-    <div class="phone-ui identity-choice-ui" data-screen-state="identityChoice">
-      <img class="identity-choice-screen-image" src="/media/screens/apple-account-identity-choice-user.jpg" alt="" draggable="false">
-    </div>`,
   appleidService: () => `
     <div class="phone-ui appleid-service-ui" data-screen-state="appleidService" aria-label="appleid.1yo.cc 引导界面">
       <img class="appleid-service-screen-image" src="/media/screens/appleid-service-step1-user.jpg" alt="" draggable="false">
@@ -75,4 +94,5 @@ const screenNodes = Object.fromEntries(Object.entries(screenTemplates).map(([key
   template.innerHTML = render().trim();
   return [key, template.content.firstElementChild as HTMLElement];
 })) as Record<TutorialStep['screen'], HTMLElement>;
-export { chevron, closeIcon, screenNodes, steps };
+
+export { chevron, closeIcon, screenNodes };

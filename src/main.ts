@@ -1,5 +1,5 @@
 import './style.css';
-import { chevron, screenNodes, steps } from './tutorial-content';
+import { chevron, screenNodes, steps, phase1Steps, phase2Steps } from './tutorial-content';
 import type { GridScanController } from './grid-scan';
 import { renderPlatformGateway } from './platform-navigation';
 
@@ -38,7 +38,7 @@ root.innerHTML = `
         <nav class="function-rail" aria-label="教程步骤">
           <div class="rail-viewport" data-rail-viewport tabindex="0" aria-label="教程步骤滚轮" aria-describedby="rail-gesture-hint">
             <div class="rail-track" data-rail-track>
-              ${steps.map((step, index) => `<button type="button" class="rail-button" data-step="${index}" aria-label="第 ${index + 1} 步：${step.label}" aria-pressed="false"><span class="metal-fx-target-reflection" aria-hidden="true"></span><span class="rail-icon">${step.icon}</span></button>`).join('')}
+              ${phase1Steps.map((step, index) => `<button type="button" class="rail-button" data-step="${index}" aria-label="第 ${index + 1} 步：${step.label}" aria-pressed="false"><span class="metal-fx-target-reflection" aria-hidden="true"></span><span class="rail-icon">${step.icon}</span></button>`).join('')}
             </div>
             <span class="metal-fx-anchor" aria-hidden="true"><span class="metal-fx-stream"></span><span class="metal-fx-bead"></span><picture><source media="(prefers-reduced-motion: reduce)" srcset="/media/metal-fx/chromatic-circle-80.png"><img src="/media/metal-fx/chromatic-circle-80.webp" alt=""></picture></span>
           </div>
@@ -150,7 +150,6 @@ function supportsGridScan() {
 const tutorialApp = document.querySelector<HTMLElement>('[data-tutorial-app]')!;
 const gatewayTitle = document.querySelector<HTMLElement>('#gateway-title')!;
 const tutorialHeading = document.querySelector<HTMLElement>('[data-tutorial-heading]');
-const changePlatform = document.querySelector<HTMLButtonElement>('[data-change-platform]');
 const viewer = document.querySelector<HTMLElement>('.viewer')!;
 const screen = document.querySelector<HTMLElement>('[data-screen]')!;
 const status = document.querySelector<HTMLElement>('[data-status]')!;
@@ -159,13 +158,11 @@ const stepCurrent = document.querySelector<HTMLElement>('[data-step-current]')!;
 const stepTotal = document.querySelector<HTMLElement>('[data-step-total]')!;
 const stepTitle = document.querySelector<HTMLElement>('[data-step-title]')!;
 const stepBody = document.querySelector<HTMLElement>('[data-step-body]')!;
-const stepProof = document.querySelector<HTMLElement>('[data-step-proof]')!;
+// const stepProof = document.querySelector<HTMLElement>('[data-step-proof]')!;
 const hud = document.querySelector<HTMLElement>('[data-hud]')!;
 const paddlePrev = document.querySelector<HTMLButtonElement>('[data-paddlenav="prev"]');
 const paddleNext = document.querySelector<HTMLButtonElement>('[data-paddlenav="next"]');
 const functionRail = document.querySelector<HTMLElement>('.function-rail')!;
-const closeControl = document.querySelector<HTMLButtonElement>('[data-close]');
-const restoreControl = document.querySelector<HTMLButtonElement>('[data-restore]')!;
 const railViewport = document.querySelector<HTMLElement>('[data-rail-viewport]')!;
 const railTrack = document.querySelector<HTMLElement>('[data-rail-track]')!;
 const metalFxAnchor = document.querySelector<HTMLElement>('.metal-fx-anchor')!;
@@ -173,7 +170,6 @@ const railCoachmark = document.querySelector<HTMLElement>('[data-rail-coachmark]
 const dockCoachmark = document.querySelector<HTMLElement>('[data-dock-coachmark]');
 let dockLearned = false;
 const gestureCopy = document.querySelector<HTMLElement>('[data-gesture-copy]')!;
-const primaryAction = document.querySelector<HTMLButtonElement>('[data-primary-action]')!;
 const storageKey = 'apple-bezel-tutorial-v4.1';
 const touchLearnedKey = 'apple-bezel-tutorial-v5.2-touch-learned';
 const wheelLearnedKey = 'apple-bezel-tutorial-v5.2-wheel-learned';
@@ -184,18 +180,13 @@ function preferredRailInput(): 'touch' | 'wheel' {
   return touchCapable ? 'touch' : 'wheel';
 }
 let current = 0;
-let mode: ViewerMode = 'expanded';
+const mode: ViewerMode = 'expanded';
 let railLearned = localStorage.getItem(preferredRailInput() === 'touch' ? touchLearnedKey : wheelLearnedKey) === '1';
 let metalTransitionTimer = 0;
-let screenTransitionTimer = 0;
-let feedbackTransitionTimer = 0;
-let completionFeedbackTimer = 0;
-let stepTransitionTimer = 0;
-let stepTransitionLocked = false;
-let queuedStep: number | null = null;
 const stepTransitionDuration = 460;
-let gesturePracticeTimer = 0;
-let gesturePracticeLocked = false;
+
+
+
 function playMetalTransition(direction: -1 | 1) {
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   window.clearTimeout(metalTransitionTimer);
@@ -229,125 +220,127 @@ function syncRailCoachmark() {
   if (!railLearned) railViewport.setAttribute('aria-describedby', 'rail-gesture-hint');
 }
 
-function confirmRailLearned(input: 'touch' | 'wheel') {
-  const currentInput = preferredRailInput();
-  if (railLearned || input !== currentInput) return;
-  railLearned = true;
-  localStorage.setItem(input === 'touch' ? touchLearnedKey : wheelLearnedKey, '1');
-  syncRailCoachmark();
-}
-
-function practiceRail(input: 'touch' | 'wheel', direction: -1 | 1) {
-  const currentInput = preferredRailInput();
-  if (railLearned || gesturePracticeLocked || input !== currentInput) return false;
-  gesturePracticeLocked = true;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    gesturePracticeLocked = false;
-    confirmRailLearned(input);
-    status.textContent = '手势练习完成，教程从第 1 步正式开始';
-    return true;
-  }
-  window.clearTimeout(gesturePracticeTimer);
-  viewer.classList.add('practicing-rail');
-  viewer.dataset.practiceDirection = direction > 0 ? 'next' : 'previous';
-  playMetalTransition(direction);
-  status.textContent = '正在练习步骤切换，教程仍停留在第 1 步';
-  gesturePracticeTimer = window.setTimeout(() => {
-    viewer.classList.remove('practicing-rail');
-    delete viewer.dataset.practiceDirection;
-    gesturePracticeLocked = false;
-    confirmRailLearned(input);
-    status.textContent = '手势练习完成，教程从第 1 步正式开始';
-  }, 500);
-  return true;
-}
-
 function storedStep() {
   const value = Number.parseInt(localStorage.getItem(storageKey) ?? '0', 10);
   return Number.isInteger(value) && value >= 0 && value < steps.length ? value : 0;
 }
 
-function renderStep(index: number, animate = true, announce = true) {
-  const previous = current;
-  current = Math.max(0, Math.min(steps.length - 1, index));
-  const shouldAnimate = animate && current !== previous;
-  if (shouldAnimate) playMetalTransition(current > previous ? 1 : -1);
-  const step = steps[current];
-  viewer.dataset.currentStep = String(current);
-  railTrack.style.setProperty('--rail-index', String(current));
+let currentPhase: 0 | 1 = 0;
+let currentStepInPhase = 0;
+
+function syncRailTrack(phaseIndex: 0 | 1) {
+  const targetSteps = phaseIndex === 0 ? phase1Steps : phase2Steps;
+  railTrack.innerHTML = targetSteps.map((step, index) => `
+    <button type="button" class="rail-button" data-step="${index}" aria-label="第 ${index + 1} 步：${step.label}" aria-pressed="false">
+      <span class="metal-fx-target-reflection" aria-hidden="true"></span>
+      <span class="rail-icon">${step.icon}</span>
+    </button>
+  `).join('');
+
+  railTrack.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button) => {
+    button.addEventListener('click', () => {
+      const idx = Number.parseInt(button.dataset.step ?? '0', 10);
+      renderStep(idx);
+    });
+  });
+}
+
+function renderStep(index: number, animate = true) {
+  const currentPhaseSteps = currentPhase === 0 ? phase1Steps : phase2Steps;
+  const previous = currentStepInPhase;
+  currentStepInPhase = Math.max(0, Math.min(currentPhaseSteps.length - 1, index));
+  const shouldAnimate = animate && currentStepInPhase !== previous;
+  if (shouldAnimate) playMetalTransition(currentStepInPhase > previous ? 1 : -1);
+
+  const step = currentPhaseSteps[currentStepInPhase];
+  viewer.dataset.phase = String(currentPhase);
+  viewer.dataset.currentStep = String(currentStepInPhase);
+  railTrack.style.setProperty('--rail-index', String(currentStepInPhase));
   hud.classList.toggle('updating', shouldAnimate);
-  hud.classList.toggle('is-complete', current === steps.length - 1);
-  document.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button, buttonIndex) => {
-    const selected = buttonIndex === current;
+
+  railTrack.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button, buttonIndex) => {
+    const selected = buttonIndex === currentStepInPhase;
     button.classList.toggle('selected', selected);
     button.classList.toggle('step-feedback', shouldAnimate && selected);
-    button.classList.toggle('reflection-above', buttonIndex === current - 1);
-    button.classList.toggle('reflection-below', buttonIndex === current + 1);
+    button.classList.toggle('reflection-above', buttonIndex === currentStepInPhase - 1);
+    button.classList.toggle('reflection-below', buttonIndex === currentStepInPhase + 1);
     button.setAttribute('aria-pressed', String(selected));
     button.tabIndex = selected ? 0 : -1;
   });
-  const isPhaseTwo = current >= 5;
-  const phase = isPhaseTwo ? 1 : 0;
-  viewer.dataset.phase = String(phase);
+
   document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
     const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
-    tab.classList.toggle('is-active', p === phase);
+    tab.classList.toggle('is-active', p === currentPhase);
   });
-  const isPhaseOneLastStep = current === 4;
-  if (paddlePrev) {
-    paddlePrev.disabled = true;
-    paddlePrev.classList.add('is-hidden');
-  }
-  if (paddleNext) {
-    if (isPhaseTwo) {
-      paddleNext.classList.add('is-hidden');
-    } else {
+
+  const badgeNum = document.querySelector<HTMLElement>('[data-step-badge-num]');
+
+  if (currentPhase === 0) {
+    // 阶段一：退出旧账户（严格 5 步）
+    const isPhaseOneLastStep = currentStepInPhase === 4;
+    if (paddlePrev) {
+      paddlePrev.disabled = true;
+      paddlePrev.classList.add('is-hidden');
+    }
+    if (paddleNext) {
       paddleNext.disabled = false;
       paddleNext.classList.remove('is-hidden');
     }
-  }
-  if (dockCoachmark) {
-    dockCoachmark.classList.toggle('is-visible', isPhaseOneLastStep && !dockLearned);
-  }
-  if (isPhaseOneLastStep && !dockLearned) {
-    hud.classList.add('dock-nudge-active');
+    if (dockCoachmark) {
+      dockCoachmark.classList.toggle('is-visible', isPhaseOneLastStep && !dockLearned);
+    }
+    if (isPhaseOneLastStep && !dockLearned) {
+      hud.classList.add('dock-nudge-active');
+    } else {
+      hud.classList.remove('dock-nudge-active');
+    }
+
+    stepCount.textContent = `第 ${currentStepInPhase + 1} 步，共 5 步`;
+    stepCurrent.textContent = String(currentStepInPhase + 1);
+    stepTotal.textContent = '5';
+    if (badgeNum) badgeNum.textContent = String(currentStepInPhase + 1);
+
+    stepTitle.textContent = step.title;
+    if (currentStepInPhase === 0) {
+      const prefix = document.createTextNode('打开你 iPhone 上的');
+      const settingsIcon = document.createElement('img');
+      settingsIcon.className = 'hud-inline-settings-icon';
+      settingsIcon.src = '/media/rail-settings-apple.png';
+      settingsIcon.alt = '设置';
+      settingsIcon.draggable = false;
+      stepBody.replaceChildren(prefix, settingsIcon);
+    } else if (currentStepInPhase === 1) {
+      stepBody.innerHTML = '进入设置页面后，轻点<span class="hud-note-avatar">顶部的头像</span>，<span class="hud-account-target">进入你的<img class="hud-inline-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-account">“Apple 账户”</span></span>。';
+    } else if (currentStepInPhase === 2) {
+      stepBody.innerHTML = '在个人的 apple 账户页面，点击<span class="hud-media-target"><img class="hud-inline-media-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-media">媒体与购买项目</span></span>选项。';
+    } else if (currentStepInPhase === 3) {
+      stepBody.innerHTML = '<span class="hud-note-signout">点击退出登录</span>，<span class="hud-note-warning">⚠️严格保证</span>你的<span class="hud-note-consistency">实际操作与前面步骤一致</span>，并再次检查是从<span class="hud-source-target"><img class="hud-inline-source-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-source">媒体与购买项目</span></span>进来的，确认后<span class="hud-note-signout">退出登录</span>。';
+    } else if (currentStepInPhase === 4) {
+      stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
+    }
   } else {
-    hud.classList.remove('dock-nudge-active');
-  }
-  const badgeNum = document.querySelector<HTMLElement>('[data-step-badge-num]');
-  if (isPhaseTwo) {
+    // 阶段二：登录新账户（第 1 步）
     railLearned = true;
     functionRail.classList.remove('teaching');
     viewer.classList.remove('teaching-rail');
+    if (paddlePrev) {
+      paddlePrev.disabled = true;
+      paddlePrev.classList.add('is-hidden');
+    }
+    if (paddleNext) {
+      paddleNext.classList.add('is-hidden');
+    }
+    if (dockCoachmark) {
+      dockCoachmark.classList.remove('is-visible');
+    }
+    hud.classList.remove('dock-nudge-active');
+
     stepCount.textContent = '阶段二：第 1 步';
     stepCurrent.textContent = '1';
     stepTotal.textContent = '1';
     if (badgeNum) badgeNum.textContent = '1';
-  } else {
-    stepCount.textContent = `第 ${current + 1} 步，共 5 步`;
-    stepCurrent.textContent = String(current + 1);
-    stepTotal.textContent = '5';
-    if (badgeNum) badgeNum.textContent = String(current + 1);
-  }
-  const complete = current === steps.length - 1;
-  stepTitle.textContent = step.title;
-  if (current === 0) {
-    const prefix = document.createTextNode('打开你 iPhone 上的');
-    const settingsIcon = document.createElement('img');
-    settingsIcon.className = 'hud-inline-settings-icon';
-    settingsIcon.src = '/media/rail-settings-apple.png';
-    settingsIcon.alt = '设置';
-    settingsIcon.draggable = false;
-    stepBody.replaceChildren(prefix, settingsIcon);
-  } else if (current === 1) {
-    stepBody.innerHTML = '进入设置页面后，轻点<span class="hud-note-avatar">顶部的头像</span>，<span class="hud-account-target">进入你的<img class="hud-inline-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-account">“Apple 账户”</span></span>。';
-  } else if (current === 2) {
-    stepBody.innerHTML = '在个人的 apple 账户页面，点击<span class="hud-media-target"><img class="hud-inline-media-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-media">媒体与购买项目</span></span>选项。';
-  } else if (current === 3) {
-    stepBody.innerHTML = '<span class="hud-note-signout">点击退出登录</span>，<span class="hud-note-warning">⚠️严格保证</span>你的<span class="hud-note-consistency">实际操作与前面步骤一致</span>，并再次检查是从<span class="hud-source-target"><img class="hud-inline-source-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-source">媒体与购买项目</span></span>进来的，确认后<span class="hud-note-signout">退出登录</span>。';
-  } else if (current === 4) {
-    stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
-  } else if (current === 5) {
+
+    stepTitle.textContent = step.title;
     stepBody.innerHTML = `
       <p class="hud-body-lead">打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。</p>
       <div class="hud-launch-action">
@@ -358,265 +351,57 @@ function renderStep(index: number, animate = true, announce = true) {
         </a>
       </div>
     `;
-  } else if (current === 6) {
-    stepBody.innerHTML = '如屏幕上点击<span class="hud-note-second-option">第二个选项</span>，以此来使用<span class="hud-other-account-target">其他<img class="hud-inline-other-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-other-account">Apple ID账户</span></span>登录。';
   }
-  stepProof.textContent = step.hudProof;
-  stepProof.closest('.hud-proof')?.classList.toggle('hidden', !step.hudProof);
-  primaryAction.textContent = '重新开始';
-  primaryAction.setAttribute('aria-label', primaryAction.textContent);
-  window.clearTimeout(screenTransitionTimer);
-  window.clearTimeout(feedbackTransitionTimer);
-  window.clearTimeout(completionFeedbackTimer);
-  screen.querySelector('.live-activity.confirming')?.classList.remove('confirming');
-  screen.classList.toggle('switching', shouldAnimate);
-  screenTransitionTimer = window.setTimeout(() => {
-    screen.replaceChildren(screenNodes[step.screen]);
+
+  // 手机屏幕节点更新
+  screen.replaceChildren(screenNodes[step.screen]);
+  if (currentPhase === 0 && currentStepInPhase === 0) {
     screen.querySelector<HTMLElement>('.home-settings-target')?.classList.toggle('cue-active', !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-    screen.classList.remove('switching');
-    hud.classList.remove('updating');
-    if (shouldAnimate && complete) {
-      const activity = screen.querySelector<HTMLElement>('.live-activity');
-      activity?.classList.add('confirming');
-      completionFeedbackTimer = window.setTimeout(() => {
-        activity?.classList.remove('confirming');
-        completionFeedbackTimer = 0;
-      }, 500);
-    }
-  }, shouldAnimate ? 120 : 0);
-  if (shouldAnimate) {
-    feedbackTransitionTimer = window.setTimeout(() => {
-      document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
-      feedbackTransitionTimer = 0;
-    }, 260);
-  } else {
-    hud.classList.remove('updating');
-    document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
   }
-  localStorage.setItem(storageKey, String(current));
-  if (announce) status.textContent = `第 ${current + 1} 步：${step.title}。${step.proof}`;
+
+  status.textContent = `${step.title}。${step.body.replace(/<[^>]+>/g, '')}`;
 }
 
-function requestStep(index: number, announce = true) {
-  if (mode !== 'expanded') return false;
-  const target = Math.max(0, Math.min(steps.length - 1, index));
-  if (target === current) {
-    if (stepTransitionLocked) queuedStep = null;
-    return false;
+function switchPhase(targetPhase: 0 | 1, targetStep = 0, triggerTransition = true) {
+  if (currentPhase !== targetPhase) {
+    currentPhase = targetPhase;
+    syncRailTrack(targetPhase);
   }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    renderStep(target, false, announce);
-    return true;
-  }
-  if (stepTransitionLocked) {
-    queuedStep = target;
-    return false;
-  }
-  stepTransitionLocked = true;
-  renderStep(target, true, announce);
-  window.clearTimeout(stepTransitionTimer);
-  stepTransitionTimer = window.setTimeout(() => {
-    stepTransitionLocked = false;
-    stepTransitionTimer = 0;
-    const queued = queuedStep;
-    queuedStep = null;
-    if (queued !== null && queued !== current) requestStep(queued);
-  }, stepTransitionDuration);
-  return true;
+  renderStep(targetStep, triggerTransition);
 }
-
-function requestDirection(direction: -1 | 1) {
-  return requestStep(current + direction);
-}
-
-function resetStep(index: number) {
-  window.clearTimeout(stepTransitionTimer);
-  window.clearTimeout(metalTransitionTimer);
-  stepTransitionTimer = 0;
-  metalTransitionTimer = 0;
-  stepTransitionLocked = false;
-  queuedStep = null;
-  metalFxAnchor.classList.remove('flowing');
-  viewer.classList.remove('metal-flowing');
-  delete metalFxAnchor.dataset.flowDirection;
-  syncBeamActivity();
-  renderStep(index, false);
-}
-
-function cancelActiveTransition() {
-  window.clearTimeout(stepTransitionTimer);
-  window.clearTimeout(metalTransitionTimer);
-  window.clearTimeout(screenTransitionTimer);
-  window.clearTimeout(feedbackTransitionTimer);
-  window.clearTimeout(completionFeedbackTimer);
-  window.clearTimeout(gesturePracticeTimer);
-  stepTransitionTimer = 0;
-  metalTransitionTimer = 0;
-  screenTransitionTimer = 0;
-  feedbackTransitionTimer = 0;
-  completionFeedbackTimer = 0;
-  gesturePracticeTimer = 0;
-  stepTransitionLocked = false;
-  queuedStep = null;
-  gesturePracticeLocked = false;
-  metalFxAnchor.classList.remove('flowing');
-  viewer.classList.remove('metal-flowing', 'practicing-rail');
-  delete metalFxAnchor.dataset.flowDirection;
-  delete viewer.dataset.practiceDirection;
-  screen.classList.remove('switching');
-  hud.classList.remove('updating');
-  document.querySelectorAll('.rail-button.step-feedback').forEach(button => button.classList.remove('step-feedback'));
-  screen.querySelector('.live-activity.confirming')?.classList.remove('confirming');
-  screen.querySelector('.home-settings-target.cue-active')?.classList.remove('cue-active');
-  screen.replaceChildren(screenNodes[steps[current].screen]);
-}
-
-function syncModeAccessibility() {
-  const collapsed = mode === 'collapsed';
-  for (const element of [functionRail, hud, closeControl].filter(Boolean) as HTMLElement[]) {
-    element.inert = collapsed;
-    element.setAttribute('aria-hidden', String(collapsed));
-  }
-  restoreControl.inert = !collapsed;
-  restoreControl.setAttribute('aria-hidden', String(!collapsed));
-}
-
-function setMode(next: ViewerMode) {
-  if (next === 'collapsed') cancelActiveTransition();
-  mode = next;
-  viewer.dataset.mode = mode;
-  syncModeAccessibility();
-  syncBeamActivity();
-  status.textContent = mode === 'expanded' ? `教程已恢复，当前为第 ${current + 1} 步` : `教程已关闭，进度已保存`;
-  (mode === 'expanded' ? railViewport : restoreControl).focus({ preventScroll: true });
-}
-
-document.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button) => button.addEventListener('click', () => {
-  if (!suppressRailClick && railLearned) requestStep(Number(button.dataset.step));
-  else if (!railLearned) status.textContent = '先完成左侧按钮的手势练习，教程会从第 1 步开始';
-}));
-screen.addEventListener('click', (event) => {
-  if (!(event.target instanceof Element) || !event.target.closest('.home-settings-target') || current !== 0 || mode !== 'expanded') return;
-  if (railLearned) requestStep(1);
-  else status.textContent = '先完成左侧按钮的手势练习，再点击屏幕上的“设置”';
-});
-let wheelLocked = false;
-railViewport.addEventListener('wheel', (event) => {
-  if (wheelLocked || gesturePracticeLocked || Math.abs(event.deltaY) < 4) return;
-  if (!railLearned && preferredRailInput() !== 'wheel') return;
-  event.preventDefault();
-  wheelLocked = true;
-  const direction: -1 | 1 = event.deltaY > 0 ? 1 : -1;
-  if (practiceRail('wheel', direction)) {
-    window.setTimeout(() => { wheelLocked = false; }, stepTransitionDuration);
-    return;
-  }
-  requestDirection(direction);
-  window.setTimeout(() => { wheelLocked = false; }, 120);
-}, { passive: false });
-let dragStartY: number | null = null;
-let dragPointerId: number | null = null;
-let draggingRail = false;
-let suppressRailClick = false;
-railViewport.addEventListener('pointerdown', (event) => {
-  if (gesturePracticeLocked || (!railLearned && preferredRailInput() !== 'touch')) return;
-  dragStartY = event.clientY;
-  dragPointerId = event.pointerId;
-  draggingRail = false;
-});
-railViewport.addEventListener('pointermove', (event) => {
-  if (dragStartY === null || dragPointerId !== event.pointerId) return;
-  if (Math.abs(event.clientY - dragStartY) > 8 && !draggingRail) {
-    draggingRail = true;
-    railViewport.setPointerCapture(event.pointerId);
-  }
-});
-railViewport.addEventListener('pointerup', (event) => {
-  if (dragStartY === null) return;
-  const distance = event.clientY - dragStartY;
-  dragStartY = null;
-  dragPointerId = null;
-  if (draggingRail && Math.abs(distance) >= 18) {
-    suppressRailClick = true;
-    const direction: -1 | 1 = distance < 0 ? 1 : -1;
-    if (!practiceRail('touch', direction)) requestDirection(direction);
-    window.setTimeout(() => { suppressRailClick = false; }, 0);
-  }
-  draggingRail = false;
-});
-railViewport.addEventListener('pointercancel', () => {
-  dragStartY = null;
-  dragPointerId = null;
-  draggingRail = false;
-});
-closeControl?.addEventListener('click', () => setMode('collapsed'));
-restoreControl.addEventListener('click', () => setMode('expanded'));
-primaryAction.addEventListener('click', () => {
-  setMode('expanded');
-  resetStep(0);
-  document.querySelector('#tutorial')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-changePlatform?.addEventListener('click', () => {
-  history.pushState(null, '', `${location.pathname}${location.search}`);
-  syncRoute(true);
-});
-
-document.addEventListener('keydown', (event) => {
-  if (tutorialApp.hidden) return;
-  if (event.key === 'Escape') {
-    if (mode === 'expanded') setMode('collapsed');
-    return;
-  }
-  if (mode !== 'expanded' || !railLearned) return;
-  const target = event.target;
-  if (!(target === railViewport || target instanceof Element && target.closest('[data-step]'))) return;
-  if (event.key === 'ArrowUp' || event.key === 'ArrowLeft' || event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-    event.preventDefault();
-    const next = Math.max(0, Math.min(steps.length - 1, current + (event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? -1 : 1)));
-    if (next !== current) requestStep(next);
-  }
-  if (event.key === 'Home' || event.key === 'End') {
-    event.preventDefault();
-    requestStep(event.key === 'Home' ? 0 : steps.length - 1);
-  }
-});
 
 document.querySelectorAll<HTMLButtonElement>('[data-phase-tab]').forEach((tab) => {
   tab.addEventListener('click', (e) => {
     e.stopPropagation();
-    const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10);
-    switchPhase(p);
+    const p = Number.parseInt(tab.dataset.phaseTab ?? '0', 10) as 0 | 1;
+    switchPhase(p, 0);
   });
 });
 
-function switchPhase(targetPhase: number, triggerTransition = true) {
-  if (targetPhase === 0) {
-    renderStep(4, triggerTransition);
-  } else if (targetPhase === 1) {
-    renderStep(5, triggerTransition);
-  }
-}
-
-paddlePrev?.addEventListener('click', () => switchPhase(0));
-paddleNext?.addEventListener('click', () => {
-  dockLearned = true;
-  dockCoachmark?.classList.remove('is-visible');
-  hud.classList.remove('dock-nudge-active');
-  if (current < steps.length - 1) {
-    requestStep(current + 1);
-  } else {
-    switchPhase(1);
+paddleNext?.addEventListener('pointerdown', (e) => {
+  e.stopPropagation();
+});
+paddleNext?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (currentPhase === 0) {
+    if (currentStepInPhase < 4) {
+      renderStep(currentStepInPhase + 1);
+    } else {
+      dockLearned = true;
+      dockCoachmark?.classList.remove('is-visible');
+      hud.classList.remove('dock-nudge-active');
+      switchPhase(1, 0);
+    }
   }
 });
 
 paddlePrev?.addEventListener('click', () => {
-  if (current > 0) {
-    requestStep(current - 1);
-  } else {
-    switchPhase(0);
+  if (currentPhase === 1) {
+    switchPhase(0, 4);
+  } else if (currentStepInPhase > 0) {
+    renderStep(currentStepInPhase - 1);
   }
 });
-
 let dockTouchStartX = 0;
 let dockTouchStartY = 0;
 let dockTouchStartTime = 0;
@@ -630,28 +415,32 @@ function finishDockDrag(x: number, y: number) {
   const dx = x - dockTouchStartX;
   const dy = y - dockTouchStartY;
   const dt = Date.now() - dockTouchStartTime;
+
   if (Math.abs(dx) > Math.abs(dy) * 1.1 && Math.abs(dx) > 25 && dt < 800) {
     if (dx < 0) {
-      // 向左轻扫 (Swipe Left): 推进到下一步，或在终点进入下一阶段
-      dockLearned = true;
-      dockCoachmark?.classList.remove('is-visible');
-      hud.classList.remove('dock-nudge-active');
-      if (current < 4) {
-        requestStep(current + 1);
-      } else if (current === 4) {
-        requestStep(5);
+      // 向左轻扫（Swipe Left）：向右推进！
+      if (currentPhase === 0) {
+        if (currentStepInPhase < 4) {
+          renderStep(currentStepInPhase + 1);
+        } else {
+          // 第一阶段最后一步做完 ➔ 顺畅切换到第二阶段！
+          dockLearned = true;
+          dockCoachmark?.classList.remove('is-visible');
+          hud.classList.remove('dock-nudge-active');
+          switchPhase(1, 0);
+        }
       }
     } else if (dx > 0) {
-      // 向右轻扫 (Swipe Right): 返回上一步，或从阶段二返回阶段一
-      if (current === 5) {
-        requestStep(4);
-      } else if (current > 0) {
-        requestStep(current - 1);
+      // 向右轻扫（Swipe Right）：向左返回！
+      if (currentPhase === 1) {
+        // 第二阶段向右轻扫 ➔ 返回第一阶段最后一步！
+        switchPhase(0, 4);
+      } else if (currentStepInPhase > 0) {
+        renderStep(currentStepInPhase - 1);
       }
     }
   }
 }
-
 hud.addEventListener('pointerdown', (e) => {
   if (e.button !== 0) return;
   dockTouchStartX = e.clientX;
@@ -729,6 +518,7 @@ window.addEventListener('hashchange', () => syncRoute(true));
 window.addEventListener('popstate', () => syncRoute(true));
 syncRoute();
 syncRailCoachmark();
-syncModeAccessibility();
-renderStep(current, false, false);
+syncRailTrack(0);
+// syncModeAccessibility();
+renderStep(current, false);
 status.textContent = current ? `已恢复到第 ${current + 1} 步：${steps[current].title}` : `教程已就绪：${steps[0].title}`;
