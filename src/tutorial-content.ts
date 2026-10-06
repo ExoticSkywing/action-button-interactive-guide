@@ -39,8 +39,8 @@ export const phase2Steps: TutorialStep[] = [
   {
     id: 'open-appleid-service',
     label: '苹果分发服务',
-    title: '打开 appleid.1yo.cc',
-    body: '打开 <a class="hud-action-link" href="https://appleid.1yo.cc" target="_blank" rel="noopener noreferrer">appleid.1yo.cc <svg class="hud-link-arrow" viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2.5 9.5l7-7M4 2.5h5.5V8"/></svg></a> 根据引导完成所有步骤。',
+    title: '打开分发服务',
+    body: '按网站引导继续操作。',
     proof: '',
     hudProof: '',
     screen: 'appleidService',
@@ -48,13 +48,24 @@ export const phase2Steps: TutorialStep[] = [
   }
 ];
 
-export const phases: TutorialPhase[] = [
-  { id: 'phase-signout', name: '01 退出旧账户', title: '退出旧账户', steps: phase1Steps },
-  { id: 'phase-signin', name: '02 登录新账户', title: '登录新账户', steps: phase2Steps }
+export const phase3Steps: TutorialStep[] = [
+  {
+    id: 'download-shadowrocket',
+    label: '下载小火箭',
+    title: 'App Store 下载 Shadowrocket',
+    body: '在 App Store 搜索 Shadowrocket 并下载，完成后退出共享 ID 换回原账户。',
+    proof: '',
+    hudProof: '',
+    screen: 'appleidService',
+    icon: icons.complete
+  }
 ];
 
-// 兼容全局引用
-export const steps: TutorialStep[] = [...phase1Steps, ...phase2Steps];
+export const phases: TutorialPhase[] = [
+  { id: 'phase-signout', name: '01 退出旧账户', title: '退出旧账户', steps: phase1Steps },
+  { id: 'phase-signin', name: '02 登录新账户', title: '登录新账户', steps: phase2Steps },
+  { id: 'phase-download', name: '03 下载与完成', title: '下载与完成', steps: phase3Steps }
+];
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
 const closeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
