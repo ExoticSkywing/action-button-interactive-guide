@@ -494,8 +494,11 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   const atPhaseEnd = currentStepInPhase === phaseSteps().length - 1;
 
   if (paddlePrev) {
-    // 第一阶段：坚决不显示左箭头；中间阶段及之后阶段：常驻激活左箭头，支持向左回退
-    const showPrev = !isPhase0;
+    // 左箭头规则：
+    // 1. 第一阶段（isPhase0）：坚决隐藏左箭头；
+    // 2. 中间阶段（isMiddlePhase）：常驻显示左箭头，支持向左回退；
+    // 3. 最后阶段（isLastPhase）：在第 1 步显示左箭头(回退到阶段 02)，进入第 2 步(末步)时隐藏左箭头。
+    const showPrev = isMiddlePhase || (isLastPhase && currentStepInPhase === 0);
     paddlePrev.hidden = !showPrev;
     paddlePrev.disabled = !showPrev;
     paddlePrev.classList.toggle('is-hidden', !showPrev);
