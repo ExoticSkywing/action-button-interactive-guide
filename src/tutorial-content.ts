@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf';
   icon: string;
 };
 
@@ -108,6 +108,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketConfigTab',
     icon: icons.railSettings
+  },
+  {
+    id: 'download-conf-shadowrocket',
+    label: '下载配置',
+    title: '从 URL 下载配置',
+    body: '首先点击右上角加号，然后会自动将复制的链接粘贴至输入框，确定有链接之后点击第二步下载',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketDownloadConf',
+    icon: icons.action
   }
 ];
 
@@ -171,6 +181,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketConfigTab: () => `
     <div class="phone-ui shadowrocket-config-tab-ui" data-screen-state="shadowrocketConfigTab" aria-label="Shadowrocket 点击底部的配置界面">
       <img class="shadowrocket-config-tab-screen-image" src="/media/screens/shadowrocket-config-tab-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketDownloadConf: () => `
+    <div class="phone-ui shadowrocket-download-conf-ui" data-screen-state="shadowrocketDownloadConf" aria-label="Shadowrocket 从 URL 下载配置界面">
+      <img class="shadowrocket-download-conf-screen-image" src="/media/screens/shadowrocket-download-conf-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
