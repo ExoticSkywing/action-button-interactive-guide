@@ -296,7 +296,7 @@ function restoreProgress() {
       phaseStepPositions[index] = Number.isInteger(step) && step >= 0 && step < phase.steps.length ? step : 0;
     });
     signoutCompleted = saved.signoutCompleted === true;
-    currentPhase = saved.phase === 1 && signoutCompleted ? 1 : 0;
+    currentPhase = typeof saved.phase === 'number' && saved.phase >= 0 && saved.phase < phases.length && (saved.phase === 0 || signoutCompleted) ? (saved.phase as PhaseIndex) : 0;
     currentStepInPhase = phaseStepPositions[currentPhase];
   } catch {
     localStorage.removeItem(phaseProgressKey);

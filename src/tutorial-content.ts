@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport';
   icon: string;
 };
 
@@ -50,21 +50,21 @@ export const phase2Steps: TutorialStep[] = [
 
 export const phase3Steps: TutorialStep[] = [
   {
-    id: 'download-shadowrocket',
-    label: '下载小火箭',
-    title: 'App Store 下载 Shadowrocket',
-    body: '在 App Store 搜索 Shadowrocket 并下载，完成后退出共享 ID 换回原账户。',
+    id: 'import-subscription-shadowrocket',
+    label: '导入订阅',
+    title: '将订阅链接导入到小火箭',
+    body: '点击右上角的➕号',
     proof: '',
     hudProof: '',
-    screen: 'appleidService',
-    icon: icons.complete
+    screen: 'shadowrocketImport',
+    icon: icons.appleLogo
   }
 ];
 
 export const phases: TutorialPhase[] = [
   { id: 'phase-signout', name: '01 退出旧账户', title: '退出旧账户', steps: phase1Steps },
   { id: 'phase-signin', name: '02 登录新账户', title: '登录新账户', steps: phase2Steps },
-  { id: 'phase-download', name: '03 下载与完成', title: '下载与完成', steps: phase3Steps }
+  { id: 'phase-download', name: '03 导入订阅链接', title: '导入订阅链接', steps: phase3Steps }
 ];
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
@@ -97,6 +97,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   appleidService: () => `
     <div class="phone-ui appleid-service-ui" data-screen-state="appleidService" aria-label="appleid.1yo.cc 引导界面">
       <img class="appleid-service-screen-image" src="/media/screens/appleid-service-step1-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketImport: () => `
+    <div class="phone-ui shadowrocket-import-ui" data-screen-state="shadowrocketImport" aria-label="Shadowrocket 导入订阅界面">
+      <img class="shadowrocket-import-screen-image" src="/media/screens/shadowrocket-import-step1-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
