@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch';
   icon: string;
 };
 
@@ -68,6 +68,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketAddNode',
     icon: icons.action
+  },
+  {
+    id: 'enable-shadowrocket',
+    label: '开启火箭',
+    title: '开启小火箭（3，4，5，6 步连续看再去操作）',
+    body: '打开顶部总开关',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketMainSwitch',
+    icon: icons.railSettings
   }
 ];
 
@@ -115,6 +125,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketAddNode: () => `
     <div class="phone-ui shadowrocket-add-node-ui" data-screen-state="shadowrocketAddNode" aria-label="Shadowrocket 添加节点界面">
       <img class="shadowrocket-add-node-screen-image" src="/media/screens/shadowrocket-add-node-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketMainSwitch: () => `
+    <div class="phone-ui shadowrocket-main-switch-ui" data-screen-state="shadowrocketMainSwitch" aria-label="Shadowrocket 打开总开关界面">
+      <img class="shadowrocket-main-switch-screen-image" src="/media/screens/shadowrocket-main-switch-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
