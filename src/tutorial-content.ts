@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode';
   icon: string;
 };
 
@@ -58,6 +58,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketImport',
     icon: icons.appleLogo
+  },
+  {
+    id: 'paste-subscription-link',
+    label: '粘贴订阅',
+    title: '粘贴订阅链接',
+    body: '根据图示完成 3 步之后点击右上角保存',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketAddNode',
+    icon: icons.action
   }
 ];
 
@@ -101,6 +111,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketImport: () => `
     <div class="phone-ui shadowrocket-import-ui" data-screen-state="shadowrocketImport" aria-label="Shadowrocket 导入订阅界面">
       <img class="shadowrocket-import-screen-image" src="/media/screens/shadowrocket-import-step1-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketAddNode: () => `
+    <div class="phone-ui shadowrocket-add-node-ui" data-screen-state="shadowrocketAddNode" aria-label="Shadowrocket 添加节点界面">
+      <img class="shadowrocket-add-node-screen-image" src="/media/screens/shadowrocket-add-node-user.jpg" alt="" draggable="false">
     </div>`,
 };
 

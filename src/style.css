@@ -1135,7 +1135,9 @@
 .appleid-service-ui,
 .appleid-service-screen-image,
 .shadowrocket-import-ui,
-.shadowrocket-import-screen-image {
+.shadowrocket-import-screen-image,
+.shadowrocket-add-node-ui,
+.shadowrocket-add-node-screen-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
