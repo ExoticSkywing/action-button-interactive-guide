@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf';
   icon: string;
 };
 
@@ -128,6 +128,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketSelectConf',
     icon: icons.complete
+  },
+  {
+    id: 'use-and-update-conf-shadowrocket',
+    label: '更新配置',
+    title: '应用并更新配置',
+    body: '依次点击图示两步：点完“使用配置”后，再次轻点 shadowrocket.conf，然后点击“更新”',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketUseAndUpdateConf',
+    icon: icons.complete
   }
 ];
 
@@ -199,6 +209,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketSelectConf: () => `
     <div class="phone-ui shadowrocket-select-conf-ui" data-screen-state="shadowrocketSelectConf" aria-label="Shadowrocket 选择配置文件界面">
       <img class="shadowrocket-select-conf-screen-image" src="/media/screens/shadowrocket-select-conf-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketUseAndUpdateConf: () => `
+    <div class="phone-ui shadowrocket-use-and-update-conf-ui" data-screen-state="shadowrocketUseAndUpdateConf" aria-label="Shadowrocket 应用并更新配置界面">
+      <img class="shadowrocket-use-and-update-conf-screen-image" src="/media/screens/shadowrocket-use-and-update-conf-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
