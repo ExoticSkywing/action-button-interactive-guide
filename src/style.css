@@ -1184,7 +1184,9 @@
 .shadowrocket-config-tab-ui,
 .shadowrocket-config-tab-screen-image,
 .shadowrocket-download-conf-ui,
-.shadowrocket-download-conf-screen-image {
+.shadowrocket-download-conf-screen-image,
+.shadowrocket-select-conf-ui,
+.shadowrocket-select-conf-screen-image {
   width: 100%;
   height: 100%;
   object-fit: cover;

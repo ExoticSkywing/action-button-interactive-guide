@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf';
   icon: string;
 };
 
@@ -118,6 +118,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketDownloadConf',
     icon: icons.action
+  },
+  {
+    id: 'select-conf-shadowrocket',
+    label: '选择配置',
+    title: '选择配置文件',
+    body: '轻点箭头指向的 shadowrocket.conf 配置文件',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketSelectConf',
+    icon: icons.complete
   }
 ];
 
@@ -185,6 +195,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketDownloadConf: () => `
     <div class="phone-ui shadowrocket-download-conf-ui" data-screen-state="shadowrocketDownloadConf" aria-label="Shadowrocket 从 URL 下载配置界面">
       <img class="shadowrocket-download-conf-screen-image" src="/media/screens/shadowrocket-download-conf-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketSelectConf: () => `
+    <div class="phone-ui shadowrocket-select-conf-ui" data-screen-state="shadowrocketSelectConf" aria-label="Shadowrocket 选择配置文件界面">
+      <img class="shadowrocket-select-conf-screen-image" src="/media/screens/shadowrocket-select-conf-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
