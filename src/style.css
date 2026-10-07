@@ -1139,7 +1139,9 @@
 .shadowrocket-add-node-ui,
 .shadowrocket-add-node-screen-image,
 .shadowrocket-main-switch-ui,
-.shadowrocket-main-switch-screen-image {
+.shadowrocket-main-switch-screen-image,
+.shadowrocket-install-profile-ui,
+.shadowrocket-install-profile-screen-image {
   width: 100%;
   height: 100%;
   object-fit: cover;

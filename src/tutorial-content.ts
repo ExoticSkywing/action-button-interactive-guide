@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile';
   icon: string;
 };
 
@@ -78,6 +78,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketMainSwitch',
     icon: icons.railSettings
+  },
+  {
+    id: 'install-vpn-profile',
+    label: '配置文件',
+    title: '安装配置文件',
+    body: '点击右边按钮',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketInstallProfile',
+    icon: icons.action
   }
 ];
 
@@ -129,6 +139,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketMainSwitch: () => `
     <div class="phone-ui shadowrocket-main-switch-ui" data-screen-state="shadowrocketMainSwitch" aria-label="Shadowrocket 打开总开关界面">
       <img class="shadowrocket-main-switch-screen-image" src="/media/screens/shadowrocket-main-switch-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketInstallProfile: () => `
+    <div class="phone-ui shadowrocket-install-profile-ui" data-screen-state="shadowrocketInstallProfile" aria-label="Shadowrocket 安装配置文件界面">
+      <img class="shadowrocket-install-profile-screen-image" src="/media/screens/shadowrocket-install-profile-user.jpg" alt="" draggable="false">
     </div>`,
 };
 
