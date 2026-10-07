@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab';
   icon: string;
 };
 
@@ -98,6 +98,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketAllowVpn',
     icon: icons.confirmSignout
+  },
+  {
+    id: 'config-tab-shadowrocket',
+    label: '配置链接',
+    title: '点击底部的配置',
+    body: '复制这个配置链接',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketConfigTab',
+    icon: icons.railSettings
   }
 ];
 
@@ -157,6 +167,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketAllowVpn: () => `
     <div class="phone-ui shadowrocket-allow-vpn-ui" data-screen-state="shadowrocketAllowVpn" aria-label="Shadowrocket 允许添加 VPN 配置界面">
       <img class="shadowrocket-allow-vpn-screen-image" src="/media/screens/shadowrocket-allow-vpn-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketConfigTab: () => `
+    <div class="phone-ui shadowrocket-config-tab-ui" data-screen-state="shadowrocketConfigTab" aria-label="Shadowrocket 点击底部的配置界面">
+      <img class="shadowrocket-config-tab-screen-image" src="/media/screens/shadowrocket-config-tab-user.jpg" alt="" draggable="false">
     </div>`,
 };
 

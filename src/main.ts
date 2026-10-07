@@ -116,6 +116,13 @@ root.innerHTML = `
               <span>前往</span>
               <svg class="hud-launch-arrow" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 12L12 4M6 4h6v6"/></svg>
             </a>
+            <button type="button" class="hud-copy-config-button" data-copy-config aria-label="复制配置链接" hidden>
+              <svg class="hud-copy-icon" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="5" y="5" width="8" height="8" rx="1.5"></rect>
+                <path d="M3 11V3.5A1.5 1.5 0 0 1 4.5 2H11"></path>
+              </svg>
+              <span class="hud-copy-text">复制配置链接</span>
+            </button>
           </div>
         </article>
 
@@ -169,6 +176,7 @@ const stepBody = document.querySelector<HTMLElement>('[data-step-body]')!;
 // const stepProof = document.querySelector<HTMLElement>('[data-step-proof]')!;
 const hud = document.querySelector<HTMLElement>('[data-hud]')!;
 const hudLaunch = document.querySelector<HTMLAnchorElement>('.hud-launch-button')!;
+const hudCopyConfig = document.querySelector<HTMLButtonElement>('[data-copy-config]')!;
 const paddlePrev = document.querySelector<HTMLButtonElement>('[data-paddlenav="prev"]');
 const paddleNext = document.querySelector<HTMLButtonElement>('[data-paddlenav="next"]');
 const functionRail = document.querySelector<HTMLElement>('.function-rail')!;
@@ -471,6 +479,10 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   railTrack.style.setProperty('--rail-index', String(currentStepInPhase));
   hud.classList.toggle('updating', shouldAnimate && !reducedMotion.matches);
   hudLaunch.hidden = currentPhase !== 1;
+  const isStep6InPhase3 = currentPhase === 2 && step.id === 'config-tab-shadowrocket';
+  if (hudCopyConfig) {
+    hudCopyConfig.hidden = !isStep6InPhase3;
+  }
 
 
   railTrack.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button, buttonIndex) => {
@@ -735,6 +747,36 @@ paddleNext?.addEventListener('click', () => {
     switchPhase((currentPhase + 1) as PhaseIndex);
   }
 });
+const CONFIG_URL = 'https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/config/shadowrocket/shadowrocket.conf';
+let copyResetTimer: ReturnType<typeof setTimeout> | null = null;
+
+hudCopyConfig?.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(CONFIG_URL);
+  } catch {
+    const textarea = document.createElement('textarea');
+    textarea.value = CONFIG_URL;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.focus();
+    textarea.select();
+    document.execCommand('copy');
+    textarea.remove();
+  }
+
+  hudCopyConfig.classList.add('is-copied');
+  const textSpan = hudCopyConfig.querySelector('.hud-copy-text');
+  if (textSpan) textSpan.textContent = '已复制 ✓';
+  status.textContent = '配置链接已复制到剪贴板。';
+
+  if (copyResetTimer) clearTimeout(copyResetTimer);
+  copyResetTimer = setTimeout(() => {
+    hudCopyConfig.classList.remove('is-copied');
+    if (textSpan) textSpan.textContent = '复制配置链接';
+  }, 2200);
+});
+
 paddlePrev?.addEventListener('click', () => {
   if (currentPhase > 0) {
     switchPhase((currentPhase - 1) as PhaseIndex);
