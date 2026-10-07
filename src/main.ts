@@ -554,6 +554,41 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     } else {
       stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
     }
+  } else if (currentPhase === 2) {
+    switch (currentStepInPhase) {
+      case 0:
+        stepBody.innerHTML = '点击右上角的<span class="hud-highlight-blue">➕号</span>';
+        break;
+      case 1:
+        stepBody.innerHTML = '根据图示完成 3 步之后点击右上角<span class="hud-highlight-blue">保存</span>';
+        break;
+      case 2:
+        stepBody.innerHTML = '打开顶部<span class="hud-highlight-circle-amber">总开关</span>';
+        break;
+      case 3:
+        stepBody.innerHTML = '点击右边按钮';
+        break;
+      case 4:
+        stepBody.innerHTML = '点击左边<span class="hud-highlight-circle-amber">“允许”</span>按钮';
+        break;
+      case 5:
+        stepBody.innerHTML = '复制这个<span class="hud-highlight-purple">配置链接</span>';
+        break;
+      case 6:
+        stepBody.innerHTML = '首先点击右上角<span class="hud-highlight-blue">加号</span>，然后会自动将复制的链接粘贴至输入框，确定有链接之后点击第二步<span class="hud-highlight-amber">下载</span>';
+        break;
+      case 7:
+        stepBody.innerHTML = '轻点箭头指向的 <span class="hud-highlight-purple">shadowrocket.conf</span> 配置文件';
+        break;
+      case 8:
+        stepBody.innerHTML = '依次点击图示两步：点完<span class="hud-highlight-blue">“使用配置”</span>后，再次轻点 <span class="hud-highlight-purple">shadowrocket.conf</span>，然后点击<span class="hud-highlight-amber">“更新”</span>';
+        break;
+      case 9:
+        stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
+        break;
+      default:
+        stepBody.textContent = step.body;
+    }
   } else {
     stepBody.textContent = step.body;
   }
