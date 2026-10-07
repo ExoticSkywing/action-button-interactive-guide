@@ -1,5 +1,6 @@
 import './style.css';
 import { chevron, screenNodes, phases } from './tutorial-content';
+import { triggerConfetti } from './confetti';
 import { metalDuration, metalFrames } from './metal-motion';
 import type { GridScanController } from './grid-scan';
 import { renderPlatformGateway } from './platform-navigation';
@@ -585,6 +586,9 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     });
   }
   syncBadgeNumber(currentStepInPhase, shouldAnimate && !reducedMotion.matches, currentStepInPhase > previous ? 1 : -1);
+  if (currentPhase === 2 && currentStepInPhase === phaseSteps().length - 1) {
+    triggerConfetti();
+  }
 }
 
 function switchPhase(targetPhase: PhaseIndex) {

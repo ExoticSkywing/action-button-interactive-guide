@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf' | 'shadowrocketComplete';
   icon: string;
 };
 
@@ -138,6 +138,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketUseAndUpdateConf',
     icon: icons.complete
+  },
+  {
+    id: 'complete-shadowrocket',
+    label: '完结撒花',
+    title: '完结撒花 🎉',
+    body: '恭喜完成所有步骤，任何时候无需关闭开关，建议常开，并不耗电',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketComplete',
+    icon: icons.appleLogo
   }
 ];
 
@@ -213,6 +223,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketUseAndUpdateConf: () => `
     <div class="phone-ui shadowrocket-use-and-update-conf-ui" data-screen-state="shadowrocketUseAndUpdateConf" aria-label="Shadowrocket 应用并更新配置界面">
       <img class="shadowrocket-use-and-update-conf-screen-image" src="/media/screens/shadowrocket-use-and-update-conf-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketComplete: () => `
+    <div class="phone-ui shadowrocket-complete-ui" data-screen-state="shadowrocketComplete" aria-label="Shadowrocket 完结撒花界面">
+      <img class="shadowrocket-complete-screen-image" src="/media/screens/shadowrocket-complete-user.jpg" alt="" draggable="false">
     </div>`,
 };
 

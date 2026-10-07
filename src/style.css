@@ -1188,7 +1188,9 @@
 .shadowrocket-select-conf-ui,
 .shadowrocket-select-conf-screen-image,
 .shadowrocket-use-and-update-conf-ui,
-.shadowrocket-use-and-update-conf-screen-image {
+.shadowrocket-use-and-update-conf-screen-image,
+.shadowrocket-complete-ui,
+.shadowrocket-complete-screen-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
