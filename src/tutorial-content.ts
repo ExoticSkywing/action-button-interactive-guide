@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn';
   icon: string;
 };
 
@@ -88,6 +88,16 @@ export const phase3Steps: TutorialStep[] = [
     hudProof: '',
     screen: 'shadowrocketInstallProfile',
     icon: icons.action
+  },
+  {
+    id: 'allow-vpn-configuration',
+    label: '允许配置',
+    title: '允许添加配置',
+    body: '点击左边“允许”按钮',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketAllowVpn',
+    icon: icons.confirmSignout
   }
 ];
 
@@ -143,6 +153,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketInstallProfile: () => `
     <div class="phone-ui shadowrocket-install-profile-ui" data-screen-state="shadowrocketInstallProfile" aria-label="Shadowrocket 安装配置文件界面">
       <img class="shadowrocket-install-profile-screen-image" src="/media/screens/shadowrocket-install-profile-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketAllowVpn: () => `
+    <div class="phone-ui shadowrocket-allow-vpn-ui" data-screen-state="shadowrocketAllowVpn" aria-label="Shadowrocket 允许添加 VPN 配置界面">
+      <img class="shadowrocket-allow-vpn-screen-image" src="/media/screens/shadowrocket-allow-vpn-user.jpg" alt="" draggable="false">
     </div>`,
 };
 

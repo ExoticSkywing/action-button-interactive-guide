@@ -1141,7 +1141,9 @@
 .shadowrocket-main-switch-ui,
 .shadowrocket-main-switch-screen-image,
 .shadowrocket-install-profile-ui,
-.shadowrocket-install-profile-screen-image {
+.shadowrocket-install-profile-screen-image,
+.shadowrocket-allow-vpn-ui,
+.shadowrocket-allow-vpn-screen-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
