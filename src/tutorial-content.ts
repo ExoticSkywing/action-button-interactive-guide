@@ -40,7 +40,7 @@ export const phase2Steps: TutorialStep[] = [
     id: 'open-appleid-service',
     label: '苹果分发服务',
     title: '打开下面链接',
-    body: '按网站引导继续操作。',
+    body: '按网站引导继续操作。做完之后，请务必回到这里继续后续步骤。',
     proof: '',
     hudProof: '',
     screen: 'appleidService',

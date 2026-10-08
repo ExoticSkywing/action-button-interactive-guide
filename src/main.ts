@@ -558,6 +558,8 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     } else {
       stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
     }
+  } else if (currentPhase === 1) {
+    stepBody.innerHTML = '按网站引导继续操作。<span class="hud-return-reminder">做完之后，<span class="hud-highlight-amber">请务必回到这里</span>继续后续步骤。</span>';
   } else if (currentPhase === 2) {
     switch (currentStepInPhase) {
       case 0:

@@ -1287,3 +1287,11 @@
   border-radius: 4px;
   background: rgba(52, 211, 153, 0.18);
 }
+
+
+/* Phase 2 return reminder */
+.hud-return-reminder {
+  display: block;
+  margin-top: 4px;
+  color: rgba(245, 245, 247, 0.88);
+}
