@@ -23,6 +23,7 @@ const icons = {
   complete: '<img class="rail-icon-image" src="/media/rail-media-purchases-apple.png" alt="退出登录" draggable="false">',
   confirmSignout: '<img class="rail-icon-image" src="/media/rail-signout-confirm-icons8.png" alt="确认退出" draggable="false">',
   appleLogo: '<img class="rail-icon-image" src="/media/rail-apple-logo.svg" alt="Apple服务" draggable="false">',
+  shadowrocket: '<img class="rail-icon-image rail-icon-squircle" src="/media/rail-shadowrocket-icon.png" alt="Shadowrocket" draggable="false">',
 };
 
 // 第一阶段：退出旧账户（严格 5 步闭环）
@@ -57,7 +58,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketImport',
-    icon: icons.appleLogo
+    icon: icons.shadowrocket
   },
   {
     id: 'paste-subscription-link',
@@ -67,7 +68,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketAddNode',
-    icon: icons.action
+    icon: icons.shadowrocket
   },
   {
     id: 'enable-shadowrocket',
@@ -77,7 +78,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketMainSwitch',
-    icon: icons.railSettings
+    icon: icons.shadowrocket
   },
   {
     id: 'install-vpn-profile',
@@ -87,7 +88,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketInstallProfile',
-    icon: icons.action
+    icon: icons.shadowrocket
   },
   {
     id: 'allow-vpn-configuration',
@@ -97,7 +98,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketAllowVpn',
-    icon: icons.confirmSignout
+    icon: icons.shadowrocket
   },
   {
     id: 'config-tab-shadowrocket',
@@ -107,7 +108,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketConfigTab',
-    icon: icons.railSettings
+    icon: icons.shadowrocket
   },
   {
     id: 'download-conf-shadowrocket',
@@ -117,7 +118,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketDownloadConf',
-    icon: icons.action
+    icon: icons.shadowrocket
   },
   {
     id: 'select-conf-shadowrocket',
@@ -127,7 +128,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketSelectConf',
-    icon: icons.complete
+    icon: icons.shadowrocket
   },
   {
     id: 'use-and-update-conf-shadowrocket',
@@ -137,7 +138,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketUseAndUpdateConf',
-    icon: icons.complete
+    icon: icons.shadowrocket
   },
   {
     id: 'complete-shadowrocket',
@@ -147,7 +148,7 @@ export const phase3Steps: TutorialStep[] = [
     proof: '',
     hudProof: '',
     screen: 'shadowrocketComplete',
-    icon: icons.appleLogo
+    icon: icons.shadowrocket
   }
 ];
 
