@@ -695,6 +695,27 @@ function switchPhase(targetPhase: PhaseIndex) {
   renderStep(currentStepInPhase, false);
   playMetalTransition(direction);
   warmAdjacentScreens();
+
+  // 触发 Dock 栏整体微弹性呼吸缩放 + 左右推拉过渡
+  if (!reducedMotion.matches) {
+    const transitClass = direction > 0 ? 'hud-transit-next' : 'hud-transit-prev';
+    hud.classList.remove('hud-transit-next', 'hud-transit-prev');
+    const hudCopyEl = hud.querySelector('.hud-copy');
+    hudCopyEl?.classList.remove('hud-copy-transit-next', 'hud-copy-transit-prev');
+
+    void hud.offsetWidth; // 触发 reflow 确保重新激活动画
+
+    hud.classList.add(transitClass);
+    if (direction > 0) hudCopyEl?.classList.add('hud-copy-transit-next');
+    else hudCopyEl?.classList.add('hud-copy-transit-prev');
+
+    const cleanTransit = () => {
+      hud.removeEventListener('animationend', cleanTransit);
+      hud.classList.remove('hud-transit-next', 'hud-transit-prev');
+      hudCopyEl?.classList.remove('hud-copy-transit-next', 'hud-copy-transit-prev');
+    };
+    hud.addEventListener('animationend', cleanTransit);
+  }
 }
 
 function learnRailInput(input: 'touch' | 'wheel') {
