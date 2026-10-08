@@ -534,7 +534,11 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   stepCount.textContent = `${phases[currentPhase].title}：第 ${currentStepInPhase + 1} 步，共 ${phaseSteps().length} 步`;
   stepCurrent.textContent = String(currentStepInPhase + 1);
   stepTotal.textContent = String(phaseSteps().length);
-  stepTitle.textContent = step.title;
+  if (currentPhase === 2 && currentStepInPhase === 2) {
+    stepTitle.innerHTML = '开启小火箭（<span class=\"hud-highlight-badge-warn\">3，4，5，6 步连续看再去操作</span>）';
+  } else {
+    stepTitle.textContent = step.title;
+  }
 
   if (currentPhase === 0) {
     if (currentStepInPhase === 0) {
