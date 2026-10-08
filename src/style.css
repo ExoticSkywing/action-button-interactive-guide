@@ -1308,3 +1308,112 @@
   margin-top: 4px;
   color: rgba(245, 245, 247, 0.88);
 }
+
+
+/* Transition styles for device screen (Transitions-dev inspired vertical slide & crossfade) */
+:root {
+  --screen-trans-dur: 320ms;
+  --screen-trans-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --screen-trans-distance: 24px;
+}
+
+.device-screen {
+  position: absolute;
+  z-index: 2;
+  left: 5.333333%;
+  top: 2.5%;
+  width: 89.333333%;
+  height: 95%;
+  overflow: hidden;
+  border-radius: 10.8%/5.1%;
+  background: #000;
+  contain: paint layout;
+}
+
+.device-screen > .phone-ui {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  will-change: transform, opacity, filter;
+}
+
+.device-screen > .phone-ui.screen-exit-up {
+  animation: screen-slide-exit-up var(--screen-trans-dur) var(--screen-trans-ease) forwards;
+}
+
+.device-screen > .phone-ui.screen-exit-down {
+  animation: screen-slide-exit-down var(--screen-trans-dur) var(--screen-trans-ease) forwards;
+}
+
+.device-screen > .phone-ui.screen-enter-up {
+  animation: screen-slide-enter-up var(--screen-trans-dur) var(--screen-trans-ease) forwards;
+}
+
+.device-screen > .phone-ui.screen-enter-down {
+  animation: screen-slide-enter-down var(--screen-trans-dur) var(--screen-trans-ease) forwards;
+}
+
+@keyframes screen-slide-exit-up {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: translateY(calc(-1 * var(--screen-trans-distance)));
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@keyframes screen-slide-exit-down {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+  100% {
+    transform: translateY(var(--screen-trans-distance));
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@keyframes screen-slide-enter-up {
+  0% {
+    transform: translateY(var(--screen-trans-distance));
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes screen-slide-enter-down {
+  0% {
+    transform: translateY(calc(-1 * var(--screen-trans-distance)));
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .device-screen > .phone-ui.screen-exit-up,
+  .device-screen > .phone-ui.screen-exit-down,
+  .device-screen > .phone-ui.screen-enter-up,
+  .device-screen > .phone-ui.screen-enter-down {
+    animation: none !important;
+    transform: none !important;
+    filter: none !important;
+    opacity: 1 !important;
+  }
+}

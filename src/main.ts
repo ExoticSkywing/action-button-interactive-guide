@@ -598,7 +598,36 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   } else {
     stepBody.textContent = step.body;
   }
-  screen.replaceChildren(screenNodes[step.screen]);
+  const nextNode = screenNodes[step.screen];
+  const oldNode = screen.firstElementChild as HTMLElement | null;
+  const direction = currentStepInPhase > previous ? 1 : -1;
+
+  if (shouldAnimate && !reducedMotion.matches && oldNode && oldNode !== nextNode) {
+    // 动态应用纵向滑移与微模糊淡入出
+    const exitClass = direction > 0 ? 'screen-exit-up' : 'screen-exit-down';
+    const enterClass = direction > 0 ? 'screen-enter-up' : 'screen-enter-down';
+
+    // 确保旧节点与新节点并存做平滑交叉切换
+    oldNode.className = oldNode.className.replace(/\b(screen-exit-up|screen-exit-down|screen-enter-up|screen-enter-down)\b/g, '').trim();
+    nextNode.className = nextNode.className.replace(/\b(screen-exit-up|screen-exit-down|screen-enter-up|screen-enter-down)\b/g, '').trim();
+
+    oldNode.classList.add(exitClass);
+    nextNode.classList.add(enterClass);
+
+    screen.appendChild(nextNode);
+
+    const onEnd = () => {
+      oldNode.removeEventListener('animationend', onEnd);
+      if (oldNode.parentNode === screen && oldNode !== nextNode) {
+        oldNode.remove();
+      }
+      oldNode.classList.remove(exitClass);
+      nextNode.classList.remove(enterClass);
+    };
+    oldNode.addEventListener('animationend', onEnd);
+  } else {
+    screen.replaceChildren(nextNode);
+  }
   if (currentPhase === 0 && currentStepInPhase === 0) {
     screen.querySelector<HTMLElement>('.home-settings-target')?.classList.toggle('cue-active', !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }
