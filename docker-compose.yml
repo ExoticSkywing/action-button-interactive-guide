@@ -1,0 +1,14 @@
+services:
+  guide-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: action-button-interactive-guide
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost/ || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
