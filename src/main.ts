@@ -480,8 +480,14 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   hud.classList.toggle('updating', shouldAnimate && !reducedMotion.matches);
   hudLaunch.hidden = currentPhase !== 1;
   const isStep6InPhase3 = currentPhase === 2 && step.id === 'config-tab-shadowrocket';
+  const isStep11InPhase3 = currentPhase === 2 && step.id === 'subscription-details-shadowrocket';
   if (hudCopyConfig) {
-    hudCopyConfig.hidden = !isStep6InPhase3;
+    hudCopyConfig.hidden = !isStep6InPhase3 && !isStep11InPhase3;
+    const textSpan = hudCopyConfig.querySelector('.hud-copy-text');
+    if (textSpan && !hudCopyConfig.classList.contains('is-copied')) {
+      textSpan.textContent = isStep11InPhase3 ? '复制 DNS 链接' : '复制配置链接';
+    }
+    hudCopyConfig.setAttribute('aria-label', isStep11InPhase3 ? '复制 DNS 链接' : '复制配置链接');
   }
 
 
@@ -619,6 +625,9 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
         break;
       case 10:
+        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制右边的 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏';
+        break;
+      case 11:
         stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
         break;
       default:
@@ -871,14 +880,20 @@ paddleNext?.addEventListener('click', () => {
   }
 });
 const CONFIG_URL = 'https://raw.githubusercontent.com/LMuniverse/ApexApple_AE1/refs/heads/main/config/shadowrocket/shadowrocket.conf';
+const DNS_URL = 'https://doh.pub/dns-query';
 let copyResetTimer: ReturnType<typeof setTimeout> | null = null;
 
 hudCopyConfig?.addEventListener('click', async () => {
+  const isStep11 = currentPhase === 2 && phaseSteps()[currentStepInPhase]?.id === 'subscription-details-shadowrocket';
+  const urlToCopy = isStep11 ? DNS_URL : CONFIG_URL;
+  const defaultLabel = isStep11 ? '复制 DNS 链接' : '复制配置链接';
+  const successDesc = isStep11 ? 'DNS 链接已复制到剪贴板。' : '配置链接已复制到剪贴板。';
+
   try {
-    await navigator.clipboard.writeText(CONFIG_URL);
+    await navigator.clipboard.writeText(urlToCopy);
   } catch {
     const textarea = document.createElement('textarea');
-    textarea.value = CONFIG_URL;
+    textarea.value = urlToCopy;
     textarea.style.position = 'fixed';
     textarea.style.opacity = '0';
     document.body.appendChild(textarea);
@@ -891,12 +906,12 @@ hudCopyConfig?.addEventListener('click', async () => {
   hudCopyConfig.classList.add('is-copied');
   const textSpan = hudCopyConfig.querySelector('.hud-copy-text');
   if (textSpan) textSpan.textContent = '已复制 ✓';
-  status.textContent = '配置链接已复制到剪贴板。';
+  status.textContent = successDesc;
 
   if (copyResetTimer) clearTimeout(copyResetTimer);
   copyResetTimer = setTimeout(() => {
     hudCopyConfig.classList.remove('is-copied');
-    if (textSpan) textSpan.textContent = '复制配置链接';
+    if (textSpan) textSpan.textContent = defaultLabel;
   }, 2200);
 });
 

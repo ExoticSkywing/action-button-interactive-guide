@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf' | 'shadowrocketUpdateSubscription' | 'shadowrocketComplete';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf' | 'shadowrocketUpdateSubscription' | 'shadowrocketSubscriptionDetails' | 'shadowrocketComplete';
   icon: string;
 };
 
@@ -151,6 +151,16 @@ export const phase3Steps: TutorialStep[] = [
     icon: icons.shadowrocket
   },
   {
+    id: 'subscription-details-shadowrocket',
+    label: '订阅配置',
+    title: '配置订阅选项',
+    body: '打开两个开关，复制右边的 DNS 链接并粘贴到 DNS 这一栏',
+    proof: '',
+    hudProof: '',
+    screen: 'shadowrocketSubscriptionDetails',
+    icon: icons.shadowrocket
+  },
+  {
     id: 'complete-shadowrocket',
     label: '完结撒花',
     title: '完结撒花 🎉',
@@ -238,6 +248,10 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
   shadowrocketUpdateSubscription: () => `
     <div class="phone-ui shadowrocket-update-subscription-ui" data-screen-state="shadowrocketUpdateSubscription" aria-label="Shadowrocket 设置与更新订阅界面">
       <img class="shadowrocket-update-subscription-screen-image" src="/media/screens/shadowrocket-update-subscription-user.jpg" alt="" draggable="false">
+    </div>`,
+  shadowrocketSubscriptionDetails: () => `
+    <div class="phone-ui shadowrocket-subscription-details-ui" data-screen-state="shadowrocketSubscriptionDetails" aria-label="Shadowrocket 订阅配置详细界面">
+      <img class="shadowrocket-subscription-details-screen-image" src="/media/screens/shadowrocket-subscription-details-user.jpg" alt="" draggable="false">
     </div>`,
   shadowrocketComplete: () => `
     <div class="phone-ui shadowrocket-complete-ui" data-screen-state="shadowrocketComplete" aria-label="Shadowrocket 完结撒花界面">
