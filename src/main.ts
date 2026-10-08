@@ -538,13 +538,24 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     stepTitle.textContent = step.title;
   }
 
-  // 触发 Dock 栏内容纵向平滑滚动 + 微模糊交叉淡入淡出（与左侧轨道、机模纵向切换 100% 呼应）
+  // 触发 Dock 栏轻微弹性微缩放 + 纵向推移（兼具弹性手感与方位指引）
   if (shouldAnimate && !reducedMotion.matches) {
     const stepDir = currentStepInPhase > previous ? 1 : -1;
     const hudCopyEl = hud.querySelector('.hud-copy') as HTMLElement | null;
+    
+    // 卡片整体微弹性呼吸
+    hud.classList.remove('hud-card-step-spring');
+    void hud.offsetWidth; // 触发 reflow
+    hud.classList.add('hud-card-step-spring');
+    const onCardSpringEnd = () => {
+      hud.removeEventListener('animationend', onCardSpringEnd);
+      hud.classList.remove('hud-card-step-spring');
+    };
+    hud.addEventListener('animationend', onCardSpringEnd);
+
     if (hudCopyEl) {
       const enterAnim = stepDir > 0 ? 'hud-step-enter-up' : 'hud-step-enter-down';
-      hudCopyEl.classList.remove('hud-step-enter-up', 'hud-step-enter-down', 'hud-step-exit-up', 'hud-step-exit-down');
+      hudCopyEl.classList.remove('hud-step-enter-up', 'hud-step-enter-down');
       void hudCopyEl.offsetWidth; // 触发 reflow
       hudCopyEl.classList.add(enterAnim);
       const onEnd = () => {
