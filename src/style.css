@@ -1508,3 +1508,43 @@
     animation: none !important;
   }
 }
+
+
+/* HUD Step vertical scroll + blur transition (Transitions-dev inspired) */
+.gallery-dock .hud-copy {
+  will-change: transform, opacity, filter;
+}
+
+@keyframes hud-step-enter-up {
+  0% {
+    transform: translateY(6px);
+    opacity: 0.35;
+    filter: blur(2px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes hud-step-enter-down {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0.35;
+    filter: blur(2px);
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.hud-step-enter-up {
+  animation: hud-step-enter-up 240ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}
+
+.hud-step-enter-down {
+  animation: hud-step-enter-down 240ms cubic-bezier(0.22, 1, 0.36, 1) both !important;
+}

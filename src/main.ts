@@ -538,6 +538,23 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     stepTitle.textContent = step.title;
   }
 
+  // 触发 Dock 栏内容纵向平滑滚动 + 微模糊交叉淡入淡出（与左侧轨道、机模纵向切换 100% 呼应）
+  if (shouldAnimate && !reducedMotion.matches) {
+    const stepDir = currentStepInPhase > previous ? 1 : -1;
+    const hudCopyEl = hud.querySelector('.hud-copy') as HTMLElement | null;
+    if (hudCopyEl) {
+      const enterAnim = stepDir > 0 ? 'hud-step-enter-up' : 'hud-step-enter-down';
+      hudCopyEl.classList.remove('hud-step-enter-up', 'hud-step-enter-down', 'hud-step-exit-up', 'hud-step-exit-down');
+      void hudCopyEl.offsetWidth; // 触发 reflow
+      hudCopyEl.classList.add(enterAnim);
+      const onEnd = () => {
+        hudCopyEl.removeEventListener('animationend', onEnd);
+        hudCopyEl.classList.remove(enterAnim);
+      };
+      hudCopyEl.addEventListener('animationend', onEnd);
+    }
+  }
+
   if (currentPhase === 0) {
     if (currentStepInPhase === 0) {
       const prefix = document.createTextNode('打开你 iPhone 上的');
