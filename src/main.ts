@@ -186,7 +186,6 @@ const railTrack = document.querySelector<HTMLElement>('[data-rail-track]')!;
 const metalFxAnchor = document.querySelector<HTMLElement>('.metal-fx-anchor')!;
 const railCoachmark = document.querySelector<HTMLElement>('[data-rail-coachmark]')!;
 const dockCoachmark = document.querySelector<HTMLElement>('[data-dock-coachmark]');
-let dockLearned = false;
 const gestureCopy = document.querySelector<HTMLElement>('[data-gesture-copy]')!;
 const touchLearnedKey = 'apple-bezel-tutorial-v5.2-touch-learned';
 const wheelLearnedKey = 'apple-bezel-tutorial-v5.2-wheel-learned';
@@ -518,18 +517,17 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     paddlePrev.setAttribute('aria-label', `上一阶段：${isPhase0 ? '' : phases[currentPhase - 1]?.title}`);
   }
 
+  const showNext = isMiddlePhase || (isPhase0 && atPhaseEnd);
+
   if (paddleNext) {
-    // 中间阶段（非第一阶段和最后一个阶段）：始终常驻显示右箭头
-    // 第一阶段：仅在执行到最后一步时显现右箭头引导进入下一阶段
-    // 最后一个阶段：不显示下一阶段箭头（结算或已到终点）
-    const showNext = isMiddlePhase || (isPhase0 && atPhaseEnd);
     paddleNext.hidden = !showNext;
     paddleNext.disabled = !showNext;
     paddleNext.classList.toggle('is-hidden', !showNext);
     paddleNext.setAttribute('aria-label', isLastPhase ? '' : `下一阶段：${phases[currentPhase + 1]?.title}`);
   }
 
-  dockCoachmark?.classList.toggle('is-visible', atPhaseEnd && !dockLearned && !isLastPhase);
+  // 只要存在下一阶段（有右侧 › 箭头可用时）就始终常驻提示气泡
+  dockCoachmark?.classList.toggle('is-visible', showNext);
   hud.classList.remove('dock-nudge-active');
   stepCount.textContent = `${phases[currentPhase].title}：第 ${currentStepInPhase + 1} 步，共 ${phaseSteps().length} 步`;
   stepCurrent.textContent = String(currentStepInPhase + 1);
@@ -687,7 +685,6 @@ function switchPhase(targetPhase: PhaseIndex) {
   const direction = targetPhase > currentPhase ? 1 : -1;
   if (targetPhase === 1) {
     signoutCompleted = true;
-    dockLearned = true;
   }
   currentPhase = targetPhase;
   currentStepInPhase = phaseStepPositions[currentPhase];
@@ -885,7 +882,6 @@ document.querySelector<HTMLButtonElement>('[data-restart]')?.addEventListener('c
   phaseStepPositions[0] = 0;
   phaseStepPositions[1] = 0;
   signoutCompleted = false;
-  dockLearned = false;
   syncRailTrack();
   renderStep(0, false);
   status.textContent = '已重新开始第一阶段：退出旧账户，第 1 步。';
