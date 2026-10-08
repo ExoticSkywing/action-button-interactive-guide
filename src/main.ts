@@ -616,6 +616,9 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '依次点击图示两步：点完<span class="hud-highlight-blue">“使用配置”</span>后，再次轻点 <span class="hud-highlight-purple">shadowrocket.conf</span>，然后点击<span class="hud-highlight-amber">“更新”</span>';
         break;
       case 9:
+        stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
+        break;
+      case 10:
         stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
         break;
       default:
