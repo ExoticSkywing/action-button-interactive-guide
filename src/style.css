@@ -682,37 +682,8 @@
 .dock-swipe-coachmark.is-visible {
   opacity: 1 !important;
   visibility: visible !important;
+  transform: translateX(-50%) translateY(0) !important;
   pointer-events: auto !important;
-  animation: coachmark-pop-pulse 850ms cubic-bezier(0.25, 1, 0.5, 1) infinite !important;
-}
-
-@keyframes coachmark-pop-pulse {
-  0% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 10px rgba(0, 113, 227, 0.2);
-  }
-  30% {
-    transform: translateX(-50%) translateY(-5px) scale(1.14);
-    box-shadow: 0 8px 26px rgba(0, 0, 0, 0.8), 0 0 28px rgba(0, 140, 255, 0.65);
-    border-color: rgba(255, 255, 255, 0.5);
-  }
-  50% {
-    transform: translateX(-50%) translateY(-2px) scale(1.08);
-  }
-  70% {
-    transform: translateX(-50%) translateY(-4px) scale(1.12);
-  }
-  100% {
-    transform: translateX(-50%) translateY(0) scale(1);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.65), 0 0 10px rgba(0, 113, 227, 0.2);
-  }
-}
-
-@media(prefers-reduced-motion: reduce) {
-  .dock-swipe-coachmark.is-visible {
-    animation: none !important;
-    transform: translateX(-50%) translateY(0) scale(1) !important;
-  }
 }
 
 .swipe-cue-tag {
@@ -724,6 +695,33 @@
   padding: 2.5px 6px;
   border-radius: 99px;
   letter-spacing: 0.02em;
+  display: inline-block;
+  transform-origin: center center;
+  animation: cue-tag-bounce 900ms cubic-bezier(0.34, 1.56, 0.64, 1) infinite !important;
+}
+
+@keyframes cue-tag-bounce {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(0, 113, 227, 0);
+  }
+  35% {
+    transform: scale(1.18);
+    box-shadow: 0 0 10px rgba(0, 140, 255, 0.7);
+  }
+  55% {
+    transform: scale(0.96);
+  }
+  75% {
+    transform: scale(1.06);
+  }
+}
+
+@media(prefers-reduced-motion: reduce) {
+  .swipe-cue-tag {
+    animation: none !important;
+    transform: none !important;
+  }
 }
 
 .swipe-cue-text {
