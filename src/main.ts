@@ -79,7 +79,10 @@ root.innerHTML = `
         </nav>
         <div class="device" data-device>
           <div class="device-screen" data-screen></div>
-          <img class="official-bezel" src="/media/bezel/iphone-17-pro-cosmic-orange-portrait.png" alt="Apple 官方星宇橙色 iPhone 17 Pro 正面机框">
+          <picture>
+            <source srcset="/media/bezel/iphone-17-pro-cosmic-orange-portrait.webp" type="image/webp">
+            <img class="official-bezel" src="/media/bezel/iphone-17-pro-cosmic-orange-portrait.png" alt="Apple 官方星宇橙色 iPhone 17 Pro 正面机框" loading="eager" fetchpriority="high">
+          </picture>
         </div>
       </div>
 
