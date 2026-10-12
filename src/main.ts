@@ -629,7 +629,7 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
         break;
       case 10:
-        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制右边的 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏';
+        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制右边的 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏。<span class="hud-subnote-box"><span class="hud-subnote-tag">注：</span>“保持代理”默认已打开，不需要动，所以一共打开的是<span class="hud-subnote-highlight">三个开关</span>。</span>';
         break;
       case 11:
         stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';

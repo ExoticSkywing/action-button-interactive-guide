@@ -154,7 +154,7 @@ export const phase3Steps: TutorialStep[] = [
     id: 'subscription-details-shadowrocket',
     label: '订阅配置',
     title: '配置订阅选项',
-    body: '打开两个开关，复制右边的 DNS 链接并粘贴到 DNS 这一栏',
+    body: '打开两个开关，复制右边的 DNS 链接并粘贴到 DNS 这一栏。注：“保持代理”默认已打开，不需要动，所以一共打开的是三个开关。',
     proof: '',
     hudProof: '',
     screen: 'shadowrocketSubscriptionDetails',
