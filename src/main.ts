@@ -482,6 +482,8 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   const step = phaseSteps()[currentStepInPhase];
   viewer.dataset.phase = String(currentPhase);
   viewer.dataset.currentStep = String(currentStepInPhase);
+  viewer.dataset.stepId = step.id;
+  hud.dataset.stepId = step.id;
   railTrack.style.setProperty('--rail-index', String(currentStepInPhase));
   hud.classList.toggle('updating', shouldAnimate && !reducedMotion.matches);
   hudLaunch.hidden = currentPhase !== 1;

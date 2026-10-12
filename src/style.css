@@ -443,6 +443,14 @@
   box-sizing: border-box;
 }
 
+.gallery-dock .tutorial-hud[data-step-id="subscription-details-shadowrocket"] .hud-action-slot {
+  width: 100%;
+  flex: 1 0 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
 .gallery-dock .hud-footer-note {
   width: 100%;
   flex: 1 0 100%;
