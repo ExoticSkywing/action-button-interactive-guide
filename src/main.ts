@@ -1027,26 +1027,73 @@ function parseAndApplyUrlTarget() {
       return;
     }
 
-    // 2. 如果显式指定了 phase（1-indexed 对应 1、2、3；0-indexed 对应 0、1、2）
+    // 2. 如果显式指定了 phase（支持数字 1、2、3... 或阶段 id 如 phase-signout）
     const phaseParam = rawParams.get('phase') ?? rawParams.get('p');
+    // 支持按步骤唯一 ID 直接定位（语义级定位，如 ?stepId=open-settings 或 ?step=open-settings）
+    const stepIdParam = rawParams.get('stepId') ?? rawParams.get('id');
+
+    if (stepIdParam) {
+      // 全局搜索对应的阶段和步骤
+      let foundPhase = -1;
+      let foundStep = -1;
+      for (let pIdx = 0; pIdx < phases.length; pIdx++) {
+        const sIdx = phases[pIdx].steps.findIndex(s => s.id === stepIdParam);
+        if (sIdx !== -1) {
+          foundPhase = pIdx;
+          foundStep = sIdx;
+          break;
+        }
+      }
+      if (foundPhase !== -1 && foundStep !== -1) {
+        cancelStepMotion();
+        resetRailDrag(false);
+        currentPhase = foundPhase as PhaseIndex;
+        currentStepInPhase = foundStep;
+        phaseStepPositions[foundPhase] = foundStep;
+        if (foundPhase > 0) signoutCompleted = true;
+        saveProgress();
+        syncRailTrack();
+        renderStep(foundStep, false);
+        return;
+      }
+    }
+
     if (phaseParam !== null) {
-      let targetPhase = parseInt(phaseParam, 10);
-      // 允许 1-indexed (1, 2, 3) 或 0-indexed (0, 1, 2)
-      if (targetPhase >= 1 && targetPhase <= phases.length) {
-        targetPhase -= 1;
-      } else if (targetPhase < 0 || targetPhase >= phases.length) {
+      let targetPhase = -1;
+      // 先尝试按阶段 id 匹配（如 ?phase=phase-signin）
+      targetPhase = phases.findIndex(p => p.id === phaseParam || p.name.includes(phaseParam));
+      if (targetPhase === -1) {
+        const parsed = parseInt(phaseParam, 10);
+        if (!isNaN(parsed)) {
+          // 允许 1-indexed (1, 2, 3...) 或 0-indexed (0, 1, 2...)
+          if (parsed >= 1 && parsed <= phases.length) {
+            targetPhase = parsed - 1;
+          } else if (parsed >= 0 && parsed < phases.length) {
+            targetPhase = parsed;
+          }
+        }
+      }
+      if (targetPhase < 0 || targetPhase >= phases.length) {
         targetPhase = 0;
       }
 
-      // 如果指定了 step（1-indexed 对应 1,2... 或 0-indexed）
+      // 如果指定了 step（支持步骤数字 1,2... 或步骤 id）
       const stepParam = rawParams.get('step') ?? rawParams.get('s');
       let targetStep = 0;
       if (stepParam !== null) {
-        targetStep = parseInt(stepParam, 10);
-        if (targetStep >= 1 && targetStep <= phases[targetPhase].steps.length) {
-          targetStep -= 1;
-        } else if (targetStep < 0 || targetStep >= phases[targetPhase].steps.length) {
-          targetStep = 0;
+        // 先尝试按步骤 id 匹配
+        const stepByIdIdx = phases[targetPhase].steps.findIndex(s => s.id === stepParam);
+        if (stepByIdIdx !== -1) {
+          targetStep = stepByIdIdx;
+        } else {
+          const parsedStep = parseInt(stepParam, 10);
+          if (!isNaN(parsedStep)) {
+            if (parsedStep >= 1 && parsedStep <= phases[targetPhase].steps.length) {
+              targetStep = parsedStep - 1;
+            } else if (parsedStep >= 0 && parsedStep < phases[targetPhase].steps.length) {
+              targetStep = parsedStep;
+            }
+          }
         }
       }
 
