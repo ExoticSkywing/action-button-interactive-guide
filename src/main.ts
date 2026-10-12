@@ -994,11 +994,92 @@ anyCoarsePointer.addEventListener?.('change', syncPreferredInput);
 document.addEventListener('visibilitychange', () => viewer.toggleAttribute('data-page-hidden', document.hidden));
 viewer.toggleAttribute('data-page-hidden', document.hidden);
 
+function parseAndApplyUrlTarget() {
+  try {
+    const rawParams = new URLSearchParams(location.search);
+    // 同时提取 #ios?xxx 或 #ios&xxx 形式的查询串
+    const hashStr = location.hash || '';
+    const qIndex = hashStr.indexOf('?');
+    if (qIndex !== -1) {
+      const hashParams = new URLSearchParams(hashStr.slice(qIndex + 1));
+      hashParams.forEach((val, key) => rawParams.set(key, val));
+    }
+    // 兼容 #ios&xxx
+    const ampIndex = hashStr.indexOf('&');
+    if (ampIndex !== -1 && (qIndex === -1 || ampIndex < qIndex)) {
+      const hashParams = new URLSearchParams(hashStr.slice(ampIndex + 1));
+      hashParams.forEach((val, key) => rawParams.set(key, val));
+    }
+
+    // 1. 如果带有 reset=1 或 restart=1，直接全局重置到第一阶段第 1 步
+    if (rawParams.get('reset') === '1' || rawParams.get('restart') === '1') {
+      cancelStepMotion();
+      resetRailDrag(false);
+      currentPhase = 0;
+      currentStepInPhase = 0;
+      phaseStepPositions[0] = 0;
+      phaseStepPositions[1] = 0;
+      phaseStepPositions[2] = 0;
+      signoutCompleted = false;
+      saveProgress();
+      syncRailTrack();
+      renderStep(0, false);
+      return;
+    }
+
+    // 2. 如果显式指定了 phase（1-indexed 对应 1、2、3；0-indexed 对应 0、1、2）
+    const phaseParam = rawParams.get('phase') ?? rawParams.get('p');
+    if (phaseParam !== null) {
+      let targetPhase = parseInt(phaseParam, 10);
+      // 允许 1-indexed (1, 2, 3) 或 0-indexed (0, 1, 2)
+      if (targetPhase >= 1 && targetPhase <= phases.length) {
+        targetPhase -= 1;
+      } else if (targetPhase < 0 || targetPhase >= phases.length) {
+        targetPhase = 0;
+      }
+
+      // 如果指定了 step（1-indexed 对应 1,2... 或 0-indexed）
+      const stepParam = rawParams.get('step') ?? rawParams.get('s');
+      let targetStep = 0;
+      if (stepParam !== null) {
+        targetStep = parseInt(stepParam, 10);
+        if (targetStep >= 1 && targetStep <= phases[targetPhase].steps.length) {
+          targetStep -= 1;
+        } else if (targetStep < 0 || targetStep >= phases[targetPhase].steps.length) {
+          targetStep = 0;
+        }
+      }
+
+      cancelStepMotion();
+      resetRailDrag(false);
+      currentPhase = targetPhase as PhaseIndex;
+      currentStepInPhase = targetStep;
+      phaseStepPositions[targetPhase] = targetStep;
+      if (targetPhase > 0) {
+        signoutCompleted = true;
+      }
+      saveProgress();
+      syncRailTrack();
+      renderStep(targetStep, false);
+    }
+  } catch (err) {
+    console.warn('[Routing] Failed to parse target params:', err);
+  }
+}
+
 function syncRoute(moveFocus = false) {
-  const showTutorial = location.hash === '#ios';
+  // 健壮支持多样化 hash 形式：如 #ios、#ios?phase=1&step=1、#ios&reset=1、#ios/1/1
+  const hashStr = location.hash || '';
+  const showTutorial = hashStr.startsWith('#ios');
   if (location.hash && !showTutorial) {
     history.replaceState(null, '', `${location.pathname}${location.search}`);
   }
+
+  // 深度解析外部 URL 参数导航（兼顾 location.search 与 location.hash 中的参数）
+  if (showTutorial) {
+    parseAndApplyUrlTarget();
+  }
+
   platformGateway.hidden = showTutorial;
   platformGateway.inert = showTutorial;
   if (showTutorial) {
