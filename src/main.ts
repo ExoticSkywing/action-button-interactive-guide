@@ -617,7 +617,7 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '复制好之后，去小火箭点击底部的<span class="hud-highlight-blue">“配置”</span>';
         break;
       case 6:
-        stepBody.innerHTML = '首先点击右上角<span class="hud-highlight-blue">加号</span>，然后会自动将复制的链接粘贴至输入框，确定有链接之后点击第二步<span class="hud-highlight-amber">下载</span>';
+        stepBody.innerHTML = '点击右上角<span class="hud-highlight-blue">加号</span>，会自动将复制的链接<span class="hud-highlight-circle-blue">粘贴至输入框</span>，确认有链接后点击第二步<span class="hud-highlight-amber">下载</span>';
         break;
       case 7:
         stepBody.innerHTML = '轻点箭头指向的 <span class="hud-highlight-purple">shadowrocket.conf</span> 配置文件';

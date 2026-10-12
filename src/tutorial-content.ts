@@ -114,7 +114,7 @@ export const phase3Steps: TutorialStep[] = [
     id: 'download-conf-shadowrocket',
     label: '下载配置',
     title: '从 URL 下载配置',
-    body: '首先点击右上角加号，然后会自动将复制的链接粘贴至输入框，确定有链接之后点击第二步下载',
+    body: '点击右上角加号，会自动将复制的链接粘贴至输入框，确认有链接后点击第二步下载',
     proof: '',
     hudProof: '',
     screen: 'shadowrocketDownloadConf',
