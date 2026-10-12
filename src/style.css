@@ -435,11 +435,54 @@
   touch-action: pan-y;
   will-change: transform;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px 16px 22px;
   border-radius: 26px !important;
   box-sizing: border-box;
+}
+
+.gallery-dock .hud-footer-note {
+  width: 100%;
+  flex: 1 0 100%;
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgba(240, 243, 246, 0.88);
+}
+
+.gallery-dock .hud-footer-note-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(255, 179, 64, 0.18);
+  border: 1px solid rgba(255, 179, 64, 0.45);
+  color: #ffb340;
+  letter-spacing: 0.02em;
+}
+
+.gallery-dock .hud-footer-note-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.gallery-dock .hud-footer-note-text strong,
+.gallery-dock .hud-footer-note-text .hud-note-total-toggle {
+  color: #38bdf8;
+  font-weight: 750;
+  white-space: nowrap;
+  margin: 0 2px;
 }
 
   .gallery-dock .tutorial-hud:active {

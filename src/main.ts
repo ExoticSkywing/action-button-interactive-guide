@@ -129,6 +129,7 @@ root.innerHTML = `
               <span class="hud-copy-text">复制配置链接</span>
             </button>
           </div>
+          <div class="hud-footer-note" data-hud-footer-note hidden></div>
         </article>
 
         <button type="button" class="paddlenav-button paddlenav-next is-hidden" data-paddlenav="next" aria-label="下一阶段" hidden disabled>
@@ -182,6 +183,7 @@ const stepBody = document.querySelector<HTMLElement>('[data-step-body]')!;
 const hud = document.querySelector<HTMLElement>('[data-hud]')!;
 const hudLaunch = document.querySelector<HTMLAnchorElement>('.hud-launch-button')!;
 const hudCopyConfig = document.querySelector<HTMLButtonElement>('[data-copy-config]')!;
+const hudFooterNote = document.querySelector<HTMLElement>('[data-hud-footer-note]')!;
 const paddlePrev = document.querySelector<HTMLButtonElement>('[data-paddlenav="prev"]');
 const paddleNext = document.querySelector<HTMLButtonElement>('[data-paddlenav="next"]');
 const functionRail = document.querySelector<HTMLElement>('.function-rail')!;
@@ -494,6 +496,16 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     hudCopyConfig.setAttribute('aria-label', isStep11InPhase3 ? '复制 DNS 链接' : '复制配置链接');
   }
 
+  if (hudFooterNote) {
+    if (isStep11InPhase3) {
+      hudFooterNote.hidden = false;
+      hudFooterNote.innerHTML = '<span class="hud-footer-note-badge">注</span><span class="hud-footer-note-text">“保持代理”默认已打开，不需要动，一共需打开<span class="hud-note-total-toggle">三个开关</span></span>';
+    } else {
+      hudFooterNote.hidden = true;
+      hudFooterNote.innerHTML = '';
+    }
+  }
+
 
   railTrack.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button, buttonIndex) => {
     const selected = buttonIndex === currentStepInPhase;
@@ -629,7 +641,7 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
         break;
       case 10:
-        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制右边的 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏。<span class="hud-subnote-box"><span class="hud-subnote-tag">注：</span>“保持代理”默认已打开，不需要动，所以一共打开的是<span class="hud-subnote-highlight">三个开关</span>。</span>';
+        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制右边的 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏';
         break;
       case 11:
         stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
