@@ -27,6 +27,7 @@ root.innerHTML = `
         `).join('')}
       </div>
       <div class="top-phase-actions">
+        <button type="button" class="top-phase-copy-link" data-copy-link aria-label="复制当前步骤直达链接">复制链接</button>
         <button type="button" class="top-phase-restart" data-primary-action data-restart aria-label="重新开始教程">重新开始</button>
       </div>
     </nav>
@@ -930,10 +931,35 @@ document.querySelector<HTMLButtonElement>('[data-restart]')?.addEventListener('c
   currentStepInPhase = 0;
   phaseStepPositions[0] = 0;
   phaseStepPositions[1] = 0;
+  phaseStepPositions[2] = 0;
   signoutCompleted = false;
+  saveProgress();
   syncRailTrack();
   renderStep(0, false);
   status.textContent = '已重新开始第一阶段：退出旧账户，第 1 步。';
+});
+
+// 复制当前步骤直达链接
+const copyLinkBtn = document.querySelector<HTMLButtonElement>('[data-copy-link]');
+let copyLinkTimer = 0;
+copyLinkBtn?.addEventListener('click', async () => {
+  try {
+    const currentStepObj = phases[currentPhase].steps[currentStepInPhase];
+    const targetUrl = `${location.origin}${location.pathname}#ios?phase=${currentPhase + 1}&step=${currentStepInPhase + 1}&stepId=${currentStepObj.id}`;
+    await navigator.clipboard.writeText(targetUrl);
+    
+    if (copyLinkBtn) {
+      copyLinkBtn.textContent = '已复制 ✓';
+      copyLinkBtn.classList.add('is-copied');
+      clearTimeout(copyLinkTimer);
+      copyLinkTimer = window.setTimeout(() => {
+        copyLinkBtn.textContent = '复制链接';
+        copyLinkBtn.classList.remove('is-copied');
+      }, 1800);
+    }
+  } catch (err) {
+    console.error('Failed to copy step link:', err);
+  }
 });
 
 let dockTouchStartX = 0;
