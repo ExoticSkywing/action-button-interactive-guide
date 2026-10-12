@@ -102,9 +102,9 @@ export const phase3Steps: TutorialStep[] = [
   },
   {
     id: 'config-tab-shadowrocket',
-    label: '配置链接',
-    title: '点击底部的配置',
-    body: '复制右边的配置链接',
+    label: '复制配置',
+    title: '复制配置链接',
+    body: '先点击右侧按钮复制配置链接，再去小火箭点击底部的“配置”',
     proof: '',
     hudProof: '',
     screen: 'shadowrocketConfigTab',
