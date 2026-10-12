@@ -499,7 +499,7 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
   if (hudFooterNote) {
     if (isStep11InPhase3) {
       hudFooterNote.hidden = false;
-      hudFooterNote.innerHTML = '<span class="hud-footer-note-badge">注</span><span class="hud-footer-note-text">“保持代理”默认已打开，不需要动，一共需打开<span class="hud-note-total-toggle">三个开关</span></span>';
+      hudFooterNote.innerHTML = '<span class="hud-footer-note-badge">注</span><span class="hud-footer-note-text">“保持代理通过”默认已打开，不需要动，一共需打开<span class="hud-note-total-toggle">三个开关</span></span>';
     } else {
       hudFooterNote.hidden = true;
       hudFooterNote.innerHTML = '';
