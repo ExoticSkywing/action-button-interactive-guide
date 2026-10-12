@@ -614,7 +614,7 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
         stepBody.innerHTML = '点击左边<span class="hud-highlight-circle-amber">“允许”</span>按钮';
         break;
       case 5:
-        stepBody.innerHTML = '先点击右侧<span class="hud-highlight-circle-amber">复制配置链接</span>，再去小火箭点击底部的<span class="hud-highlight-blue">“配置”</span>';
+        stepBody.innerHTML = '复制好之后，去小火箭点击底部的<span class="hud-highlight-blue">“配置”</span>';
         break;
       case 6:
         stepBody.innerHTML = '首先点击右上角<span class="hud-highlight-blue">加号</span>，然后会自动将复制的链接粘贴至输入框，确定有链接之后点击第二步<span class="hud-highlight-amber">下载</span>';
