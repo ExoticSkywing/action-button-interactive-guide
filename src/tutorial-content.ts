@@ -5,7 +5,7 @@ export type TutorialStep = {
   body: string;
   proof: string;
   hudProof: string;
-  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf' | 'shadowrocketUpdateSubscription' | 'shadowrocketSubscriptionDetails' | 'shadowrocketComplete';
+  screen: 'settings' | 'action' | 'translate' | 'complete' | 'confirmSignout' | 'appleidService' | 'shadowrocketImport' | 'shadowrocketAddNode' | 'shadowrocketMainSwitch' | 'shadowrocketInstallProfile' | 'shadowrocketAllowVpn' | 'shadowrocketConfigTab' | 'shadowrocketDownloadConf' | 'shadowrocketSelectConf' | 'shadowrocketUseAndUpdateConf' | 'shadowrocketUpdateSubscription' | 'shadowrocketSubscriptionDetails' | 'shadowrocketComplete' | 'platformReadyAndroid' | 'platformReadyHarmony';
   icon: string;
 };
 
@@ -24,6 +24,8 @@ const icons = {
   confirmSignout: '<img class="rail-icon-image" src="/media/rail-signout-confirm-icons8.png" alt="确认退出" draggable="false">',
   appleLogo: '<img class="rail-icon-image" src="/media/rail-apple-logo.svg" alt="Apple服务" draggable="false">',
   shadowrocket: '<img class="rail-icon-image rail-icon-squircle" src="/media/rail-shadowrocket-icon.png" alt="Shadowrocket" draggable="false">',
+  androidApp: '<svg class="rail-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#38bdf8;"><rect x="5" y="2" width="14" height="20" rx="3"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>',
+  harmonyApp: '<svg class="rail-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:#f43f5e;"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>',
 };
 
 // 第一阶段：退出旧账户（严格 5 步闭环）
@@ -182,13 +184,13 @@ export const androidPhases: TutorialPhase[] = [
   { id: 'phase-android-setup', name: '01 客户端配置', title: '客户端配置', steps: [
     {
       id: 'android-install',
-      label: '下载安装',
-      title: '下载并安装客户端',
-      body: '下载安装 Android 客户端后打开，准备导入订阅链接',
+      label: '准备就绪',
+      title: '准备配置 Android 教程',
+      body: '请提供 Android 客户端教程的第一步操作与截图',
       proof: '',
       hudProof: '',
-      screen: 'settings',
-      icon: icons.railSettings
+      screen: 'platformReadyAndroid',
+      icon: icons.androidApp
     }
   ]}
 ];
@@ -197,13 +199,13 @@ export const harmonyPhases: TutorialPhase[] = [
   { id: 'phase-harmony-setup', name: '01 鸿蒙客户端配置', title: '鸿蒙客户端配置', steps: [
     {
       id: 'harmony-install',
-      label: '下载安装',
-      title: '下载并安装鸿蒙客户端',
-      body: '下载安装 HarmonyOS 客户端后打开，准备导入配置',
+      label: '准备就绪',
+      title: '准备配置鸿蒙教程',
+      body: '请提供鸿蒙客户端教程的第一步操作与截图',
       proof: '',
       hudProof: '',
-      screen: 'settings',
-      icon: icons.railSettings
+      screen: 'platformReadyHarmony',
+      icon: icons.harmonyApp
     }
   ]}
 ];
@@ -286,9 +288,25 @@ const screenTemplates: Record<TutorialStep['screen'], () => string> = {
       <img class="shadowrocket-subscription-details-screen-image" src="/media/screens/shadowrocket-subscription-details-user.jpg" alt="" draggable="false">
     </div>`,
   shadowrocketComplete: () => `
-    <div class="phone-ui shadowrocket-complete-ui" data-screen-state="shadowrocketComplete" aria-label="Shadowrocket 完结撒花界面">
+    <div class="phone-ui shadowrocket-complete-ui" data-screen-state="shadowrocketComplete" aria-label="Shadowrocket 全部配置完成示意">
       <img class="shadowrocket-complete-screen-image" src="/media/screens/shadowrocket-complete-user.jpg" alt="" draggable="false">
     </div>`,
+  platformReadyAndroid: () => `
+    <div class="phone-ui android-ready-ui" data-screen-state="platformReadyAndroid" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#090a0f;color:#f0f3f6;padding:24px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:18px;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M10 8-2-3m14 3 2-3M8 14h16v10.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 8 24.5V14Z"/><path d="M8 14v-1a8 8 0 0 1 16 0v1M12.5 11h.01M19.5 11h.01M4.5 15v8M27.5 15v8"/></svg>
+      </div>
+      <h3 style="font-size:18px;font-weight:700;margin:0 0 8px 0;color:#ffffff;">Android 教程已就绪</h3>
+      <p style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.65);margin:0;">请提供 Android 客户端教程的第一步操作内容与截图</p>
+    </div>`,
+  platformReadyHarmony: () => `
+    <div class="phone-ui harmony-ready-ui" data-screen-state="platformReadyHarmony" style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;background:#090a0f;color:#f0f3f6;padding:24px;text-align:center;">
+      <div style="width:64px;height:64px;border-radius:18px;background:rgba(244,63,94,0.12);border:1px solid rgba(244,63,94,0.3);display:flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#f43f5e" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <h3 style="font-size:18px;font-weight:700;margin:0 0 8px 0;color:#ffffff;">HarmonyOS 教程已就绪</h3>
+      <p style="font-size:13px;line-height:1.5;color:rgba(255,255,255,0.65);margin:0;">请提供鸿蒙客户端教程的第一步操作内容与截图</p>
+    </div>`
 };
 
 const screenNodes = Object.fromEntries(Object.entries(screenTemplates).map(([key, render]) => {

@@ -309,29 +309,37 @@ function animateRailPosition(from: number, to: number, offset = 0) {
   railMotion.onfinish = () => { if (railGeometryPending) requestAnimationFrame(measureRailGeometry); };
 }
 
-const phaseProgressKey = 'apple-bezel-tutorial-phase-progress-v1';
+function getProgressKey(platform: PlatformId = activePlatform) {
+  return `tutorial-progress-${platform}-v2`;
+}
 
 function phaseSteps() {
   return phases[currentPhase].steps;
 }
 
 function saveProgress() {
-  localStorage.setItem(phaseProgressKey, JSON.stringify({ phase: currentPhase, steps: phaseStepPositions, signoutCompleted }));
+  localStorage.setItem(getProgressKey(), JSON.stringify({ phase: currentPhase, steps: phaseStepPositions, signoutCompleted }));
 }
 
 function restoreProgress() {
   try {
-    const saved = JSON.parse(localStorage.getItem(phaseProgressKey) ?? 'null');
-    if (!saved || !Array.isArray(saved.steps)) return;
+    const saved = JSON.parse(localStorage.getItem(getProgressKey()) ?? 'null');
+    if (!saved || !Array.isArray(saved.steps)) {
+      phaseStepPositions = phases.map(() => 0);
+      currentPhase = 0;
+      currentStepInPhase = 0;
+      signoutCompleted = false;
+      return;
+    }
     phases.forEach((phase, index) => {
       const step = saved.steps[index];
       phaseStepPositions[index] = Number.isInteger(step) && step >= 0 && step < phase.steps.length ? step : 0;
     });
     signoutCompleted = saved.signoutCompleted === true;
     currentPhase = typeof saved.phase === 'number' && saved.phase >= 0 && saved.phase < phases.length && (saved.phase === 0 || signoutCompleted) ? (saved.phase as PhaseIndex) : 0;
-    currentStepInPhase = phaseStepPositions[currentPhase];
+    currentStepInPhase = phaseStepPositions[currentPhase] ?? 0;
   } catch {
-    localStorage.removeItem(phaseProgressKey);
+    localStorage.removeItem(getProgressKey());
   }
 }
 
@@ -608,68 +616,73 @@ function renderStep(index: number, animate = true, dragOffset = 0) {
     }
   }
 
-  if (currentPhase === 0) {
-    if (currentStepInPhase === 0) {
-      const prefix = document.createTextNode('打开你 iPhone 上的');
-      const settingsIcon = document.createElement('img');
-      settingsIcon.className = 'hud-inline-settings-icon';
-      settingsIcon.src = '/media/rail-settings-apple.png';
-      settingsIcon.alt = '设置';
-      settingsIcon.draggable = false;
-      stepBody.replaceChildren(prefix, settingsIcon);
-    } else if (currentStepInPhase === 1) {
-      stepBody.innerHTML = '进入设置页面后，轻点<span class="hud-note-avatar">顶部的头像</span>，<span class="hud-account-target">进入你的<img class="hud-inline-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-account">“Apple 账户”</span></span>。';
-    } else if (currentStepInPhase === 2) {
-      stepBody.innerHTML = '在个人的 apple 账户页面，点击<span class="hud-media-target"><img class="hud-inline-media-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-media">媒体与购买项目</span></span>选项。';
-    } else if (currentStepInPhase === 3) {
-      stepBody.innerHTML = '<span class="hud-note-signout">点击退出登录</span>，<span class="hud-note-warning">⚠️严格保证</span>你的<span class="hud-note-consistency">实际操作与前面步骤一致</span>，并再次检查是从<span class="hud-source-target"><img class="hud-inline-source-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-source">媒体与购买项目</span></span>进来的，确认后<span class="hud-note-signout">退出登录</span>。';
+  if (activePlatform === 'ios') {
+    if (currentPhase === 0) {
+      if (currentStepInPhase === 0) {
+        const prefix = document.createTextNode('打开你 iPhone 上的');
+        const settingsIcon = document.createElement('img');
+        settingsIcon.className = 'hud-inline-settings-icon';
+        settingsIcon.src = '/media/rail-settings-apple.png';
+        settingsIcon.alt = '设置';
+        settingsIcon.draggable = false;
+        stepBody.replaceChildren(prefix, settingsIcon);
+      } else if (currentStepInPhase === 1) {
+        stepBody.innerHTML = '进入设置页面后，轻点<span class="hud-note-avatar">顶部的头像</span>，<span class="hud-account-target">进入你的<img class="hud-inline-account-icon" src="/media/rail-action-apple.png" alt="" draggable="false"><span class="hud-note-account">“Apple 账户”</span></span>。';
+      } else if (currentStepInPhase === 2) {
+        stepBody.innerHTML = '在个人的 apple 账户页面，点击<span class="hud-media-target"><img class="hud-inline-media-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-media">媒体与购买项目</span></span>选项。';
+      } else if (currentStepInPhase === 3) {
+        stepBody.innerHTML = '<span class="hud-note-signout">点击退出登录</span>，<span class="hud-note-warning">⚠️严格保证</span>你的<span class="hud-note-consistency">实际操作与前面步骤一致</span>，并再次检查是从<span class="hud-source-target"><img class="hud-inline-source-icon" src="/media/rail-media-purchases-apple.png" alt="" draggable="false"><span class="hud-note-source">媒体与购买项目</span></span>进来的，确认后<span class="hud-note-signout">退出登录</span>。';
+      } else {
+        stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
+      }
+    } else if (currentPhase === 1) {
+      stepBody.innerHTML = '按网站引导继续操作。<span class="hud-return-reminder">做完之后，<span class="hud-highlight-amber">请务必回到这里</span>继续后续步骤。</span>';
+    } else if (currentPhase === 2) {
+      switch (currentStepInPhase) {
+        case 0:
+          stepBody.innerHTML = '点击右上角的<span class="hud-highlight-blue">➕号</span>';
+          break;
+        case 1:
+          stepBody.innerHTML = '根据图示完成 3 步之后点击右上角<span class="hud-highlight-blue">保存</span>';
+          break;
+        case 2:
+          stepBody.innerHTML = '打开顶部<span class="hud-highlight-circle-amber">总开关</span>';
+          break;
+        case 3:
+          stepBody.innerHTML = '点击右边按钮';
+          break;
+        case 4:
+          stepBody.innerHTML = '点击左边<span class="hud-highlight-circle-amber">“允许”</span>按钮';
+          break;
+        case 5:
+          stepBody.innerHTML = '复制好之后，去小火箭点击底部的<span class="hud-highlight-blue">“配置”</span>';
+          break;
+        case 6:
+          stepBody.innerHTML = '点击右上角<span class="hud-highlight-blue">加号</span>，会自动将复制的链接<span class="hud-highlight-circle-blue">粘贴至输入框</span>，确认有链接后点击第二步<span class="hud-highlight-amber">下载</span>';
+          break;
+        case 7:
+          stepBody.innerHTML = '轻点箭头指向的 <span class="hud-highlight-purple">shadowrocket.conf</span> 配置文件';
+          break;
+        case 8:
+          stepBody.innerHTML = '依次点击图示两步：点完<span class="hud-highlight-blue">“使用配置”</span>后，再次轻点 <span class="hud-highlight-purple">shadowrocket.conf</span>，然后点击<span class="hud-highlight-amber">“更新”</span>';
+          break;
+        case 9:
+          stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
+          break;
+        case 10:
+          stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏';
+          break;
+        case 11:
+          stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
+          break;
+        default:
+          stepBody.textContent = step.body;
+      }
     } else {
-      stepBody.innerHTML = '在弹出的提示中，点击<span class="hud-confirm-target"><img class="hud-inline-confirm-icon" src="/media/rail-signout-confirm-icons8.png" alt="" draggable="false"><span class="hud-note-confirm-signout">“退出登录”</span></span>。<span class="hud-confirm-optional"><span class="hud-note-if-missing">若未出现</span>“再次确认”提示，<span class="hud-note-skip-step">可跳过此步</span>。</span>';
-    }
-  } else if (currentPhase === 1) {
-    stepBody.innerHTML = '按网站引导继续操作。<span class="hud-return-reminder">做完之后，<span class="hud-highlight-amber">请务必回到这里</span>继续后续步骤。</span>';
-  } else if (currentPhase === 2) {
-    switch (currentStepInPhase) {
-      case 0:
-        stepBody.innerHTML = '点击右上角的<span class="hud-highlight-blue">➕号</span>';
-        break;
-      case 1:
-        stepBody.innerHTML = '根据图示完成 3 步之后点击右上角<span class="hud-highlight-blue">保存</span>';
-        break;
-      case 2:
-        stepBody.innerHTML = '打开顶部<span class="hud-highlight-circle-amber">总开关</span>';
-        break;
-      case 3:
-        stepBody.innerHTML = '点击右边按钮';
-        break;
-      case 4:
-        stepBody.innerHTML = '点击左边<span class="hud-highlight-circle-amber">“允许”</span>按钮';
-        break;
-      case 5:
-        stepBody.innerHTML = '复制好之后，去小火箭点击底部的<span class="hud-highlight-blue">“配置”</span>';
-        break;
-      case 6:
-        stepBody.innerHTML = '点击右上角<span class="hud-highlight-blue">加号</span>，会自动将复制的链接<span class="hud-highlight-circle-blue">粘贴至输入框</span>，确认有链接后点击第二步<span class="hud-highlight-amber">下载</span>';
-        break;
-      case 7:
-        stepBody.innerHTML = '轻点箭头指向的 <span class="hud-highlight-purple">shadowrocket.conf</span> 配置文件';
-        break;
-      case 8:
-        stepBody.innerHTML = '依次点击图示两步：点完<span class="hud-highlight-blue">“使用配置”</span>后，再次轻点 <span class="hud-highlight-purple">shadowrocket.conf</span>，然后点击<span class="hud-highlight-amber">“更新”</span>';
-        break;
-      case 9:
-        stepBody.innerHTML = '点击右下角的<span class="hud-highlight-blue">设置</span>，然后找到<span class="hud-highlight-circle-amber">订阅</span>，点击<span class="hud-highlight-amber">订阅</span>';
-        break;
-      case 10:
-        stepBody.innerHTML = '打开<span class="hud-highlight-circle-amber">两个开关</span>，复制 <span class="hud-highlight-purple">DNS 链接</span>并粘贴到 DNS 这一栏';
-        break;
-      case 11:
-        stepBody.innerHTML = '恭喜完成所有步骤，任何时候无需关闭开关，建议<span class="hud-highlight-badge-success">常开</span>，并<span class="hud-highlight-blue">不耗电</span>';
-        break;
-      default:
-        stepBody.textContent = step.body;
+      stepBody.textContent = step.body;
     }
   } else {
+    // Android 或 HarmonyOS 渲染各自独立定义的步骤文案
     stepBody.textContent = step.body;
   }
   const nextNode = screenNodes[step.screen];
@@ -1172,6 +1185,26 @@ function parseAndApplyUrlTarget() {
   }
 }
 
+function syncBezel() {
+  const bezelSource = document.querySelector<HTMLSourceElement>('.device picture source');
+  const bezelImg = document.querySelector<HTMLImageElement>('.official-bezel');
+  if (bezelSource && bezelImg) {
+    if (activePlatform === 'android') {
+      bezelSource.srcset = '/media/bezel/samsung-s24-portrait.webp';
+      bezelImg.src = '/media/bezel/samsung-s24-portrait.png';
+      bezelImg.alt = 'Samsung Galaxy S24 正面机框';
+    } else if (activePlatform === 'harmony') {
+      bezelSource.srcset = '/media/bezel/huawei-pura70-portrait.webp';
+      bezelImg.src = '/media/bezel/huawei-pura70-portrait.png';
+      bezelImg.alt = 'Huawei Pura 70 正面机框';
+    } else {
+      bezelSource.srcset = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.webp';
+      bezelImg.src = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.png';
+      bezelImg.alt = 'Apple 官方星宇橙色 iPhone 17 Pro 正面机框';
+    }
+  }
+}
+
 function syncRoute(moveFocus = false) {
   const hashStr = location.hash || '';
   const isIos = hashStr.startsWith('#ios');
@@ -1184,44 +1217,27 @@ function syncRoute(moveFocus = false) {
   }
 
   const newPlatform: PlatformId = isAndroid ? 'android' : (isHarmony ? 'harmony' : 'ios');
-  if (showTutorial && newPlatform !== activePlatform) {
+  if (newPlatform !== activePlatform) {
     activePlatform = newPlatform;
     phases = getPlatformPhases(activePlatform);
-    phaseStepPositions = phases.map(() => 0);
-    currentPhase = 0;
-    currentStepInPhase = 0;
-    
+    restoreProgress();
+  }
+  syncBezel();
+
+  if (showTutorial) {
     // 更新顶部阶段导航 tabs
     const tabsContainer = document.querySelector<HTMLElement>('.top-phase-tabs');
     if (tabsContainer) {
       tabsContainer.innerHTML = phases.map((p, idx) => `
         ${idx > 0 ? '<span class="top-phase-divider" aria-hidden="true">/</span>' : ''}
-        <button type="button" class="top-phase-tab ${idx === 0 ? 'is-active' : ''}" data-phase-tab="${idx}" aria-label="阶段${idx + 1}：${p.title}">
+        <button type="button" class="top-phase-tab ${idx === currentPhase ? 'is-active' : ''}" data-phase-tab="${idx}" aria-label="阶段${idx + 1}：${p.title}">
           <span class="top-phase-badge">0${idx + 1}</span>
           <span class="top-phase-title">${p.title}</span>
         </button>
       `).join('');
     }
-
-    // 更新机模
-    const bezelSource = document.querySelector<HTMLSourceElement>('.device picture source');
-    const bezelImg = document.querySelector<HTMLImageElement>('.official-bezel');
-    if (bezelSource && bezelImg) {
-      if (activePlatform === 'android') {
-        bezelSource.srcset = '/media/bezel/samsung-s24-portrait.webp';
-        bezelImg.src = '/media/bezel/samsung-s24-portrait.png';
-        bezelImg.alt = 'Samsung Galaxy S24 正面机框';
-      } else if (activePlatform === 'harmony') {
-        bezelSource.srcset = '/media/bezel/huawei-pura70-portrait.webp';
-        bezelImg.src = '/media/bezel/huawei-pura70-portrait.png';
-        bezelImg.alt = 'Huawei Pura 70 正面机框';
-      } else {
-        bezelSource.srcset = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.webp';
-        bezelImg.src = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.png';
-        bezelImg.alt = 'Apple 官方星宇橙色 iPhone 17 Pro 正面机框';
-      }
-    }
     syncRailTrack();
+    renderStep(currentStepInPhase, false);
   }
 
   // 深度解析外部 URL 参数导航（兼顾 location.search 与 location.hash 中的参数）
