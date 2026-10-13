@@ -1186,8 +1186,14 @@ function parseAndApplyUrlTarget() {
 }
 
 function syncBezel() {
+  const deviceEl = document.querySelector<HTMLElement>('.device');
   const bezelSource = document.querySelector<HTMLSourceElement>('.device picture source');
   const bezelImg = document.querySelector<HTMLImageElement>('.official-bezel');
+  
+  if (deviceEl) {
+    deviceEl.setAttribute('data-platform', activePlatform);
+  }
+  
   if (bezelSource && bezelImg) {
     if (activePlatform === 'android') {
       bezelSource.srcset = '/media/bezel/samsung-s24-portrait.webp';

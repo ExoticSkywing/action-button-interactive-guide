@@ -1565,6 +1565,24 @@
   contain: paint layout;
 }
 
+/* 真实三星 Galaxy S24 专属屏幕视口与小直屏圆角 */
+.device[data-platform="android"] .device-screen {
+  left: 4.96%;
+  top: 5.69%;
+  width: 89.41%;
+  height: 91.63%;
+  border-radius: 4.8%/2.3%;
+}
+
+/* 真实华为 Pura 70 专属屏幕视口与微弧直屏圆角 */
+.device[data-platform="harmony"] .device-screen {
+  left: 6.74%;
+  top: 5.91%;
+  width: 85.41%;
+  height: 91.45%;
+  border-radius: 6.2%/3.0%;
+}
+
 .device-screen > .phone-ui {
   position: absolute;
   inset: 0;
