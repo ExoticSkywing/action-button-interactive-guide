@@ -1,9 +1,27 @@
 import './style.css';
-import { chevron, screenNodes, phases } from './tutorial-content';
+import { chevron, screenNodes, iosPhases, androidPhases, harmonyPhases, type TutorialPhase } from './tutorial-content';
 import { triggerConfetti } from './confetti';
 import { metalDuration, metalFrames } from './metal-motion';
 import type { GridScanController } from './grid-scan';
 import { renderPlatformGateway } from './platform-navigation';
+
+type PlatformId = 'ios' | 'android' | 'harmony';
+
+function getCurrentPlatform(): PlatformId {
+  const hash = location.hash || '';
+  if (hash.startsWith('#android')) return 'android';
+  if (hash.startsWith('#harmony')) return 'harmony';
+  return 'ios';
+}
+
+function getPlatformPhases(platform: PlatformId = getCurrentPlatform()): TutorialPhase[] {
+  if (platform === 'android') return androidPhases;
+  if (platform === 'harmony') return harmonyPhases;
+  return iosPhases;
+}
+
+let activePlatform: PlatformId = getCurrentPlatform();
+let phases: TutorialPhase[] = getPlatformPhases(activePlatform);
 
 const root = document.querySelector<HTMLElement>('#app')!;
 root.innerHTML = `
@@ -204,7 +222,7 @@ function preferredRailInput(): 'touch' | 'wheel' {
 type PhaseIndex = number;
 let currentPhase: PhaseIndex = 0;
 let currentStepInPhase = 0;
-const phaseStepPositions: number[] = [0, 0, 0];
+let phaseStepPositions: number[] = [0, 0, 0];
 let signoutCompleted = false;
 let railLearned = localStorage.getItem(preferredRailInput() === 'touch' ? touchLearnedKey : wheelLearnedKey) === '1';
 const stepTransitionDuration = metalDuration;
@@ -1155,11 +1173,55 @@ function parseAndApplyUrlTarget() {
 }
 
 function syncRoute(moveFocus = false) {
-  // 健壮支持多样化 hash 形式：如 #ios、#ios?phase=1&step=1、#ios&reset=1、#ios/1/1
   const hashStr = location.hash || '';
-  const showTutorial = hashStr.startsWith('#ios');
+  const isIos = hashStr.startsWith('#ios');
+  const isAndroid = hashStr.startsWith('#android');
+  const isHarmony = hashStr.startsWith('#harmony');
+  const showTutorial = isIos || isAndroid || isHarmony;
+
   if (location.hash && !showTutorial) {
     history.replaceState(null, '', `${location.pathname}${location.search}`);
+  }
+
+  const newPlatform: PlatformId = isAndroid ? 'android' : (isHarmony ? 'harmony' : 'ios');
+  if (showTutorial && newPlatform !== activePlatform) {
+    activePlatform = newPlatform;
+    phases = getPlatformPhases(activePlatform);
+    phaseStepPositions = phases.map(() => 0);
+    currentPhase = 0;
+    currentStepInPhase = 0;
+    
+    // 更新顶部阶段导航 tabs
+    const tabsContainer = document.querySelector<HTMLElement>('.top-phase-tabs');
+    if (tabsContainer) {
+      tabsContainer.innerHTML = phases.map((p, idx) => `
+        ${idx > 0 ? '<span class="top-phase-divider" aria-hidden="true">/</span>' : ''}
+        <button type="button" class="top-phase-tab ${idx === 0 ? 'is-active' : ''}" data-phase-tab="${idx}" aria-label="阶段${idx + 1}：${p.title}">
+          <span class="top-phase-badge">0${idx + 1}</span>
+          <span class="top-phase-title">${p.title}</span>
+        </button>
+      `).join('');
+    }
+
+    // 更新机模
+    const bezelSource = document.querySelector<HTMLSourceElement>('.device picture source');
+    const bezelImg = document.querySelector<HTMLImageElement>('.official-bezel');
+    if (bezelSource && bezelImg) {
+      if (activePlatform === 'android') {
+        bezelSource.srcset = '/media/bezel/samsung-s24-portrait.webp';
+        bezelImg.src = '/media/bezel/samsung-s24-portrait.png';
+        bezelImg.alt = 'Samsung Galaxy S24 正面机框';
+      } else if (activePlatform === 'harmony') {
+        bezelSource.srcset = '/media/bezel/huawei-pura70-portrait.webp';
+        bezelImg.src = '/media/bezel/huawei-pura70-portrait.png';
+        bezelImg.alt = 'Huawei Pura 70 正面机框';
+      } else {
+        bezelSource.srcset = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.webp';
+        bezelImg.src = '/media/bezel/iphone-17-pro-cosmic-orange-portrait.png';
+        bezelImg.alt = 'Apple 官方星宇橙色 iPhone 17 Pro 正面机框';
+      }
+    }
+    syncRailTrack();
   }
 
   // 深度解析外部 URL 参数导航（兼顾 location.search 与 location.hash 中的参数）
@@ -1178,18 +1240,20 @@ function syncRoute(moveFocus = false) {
     const request = ++gridScanRequest;
     void import('./grid-scan')
       .then(({ createGridScan }) => {
-        if (request !== gridScanRequest || location.hash === '#ios' || gridScan) return;
+        if (request !== gridScanRequest || showTutorial || gridScan) return;
         gridScan = createGridScan(gridScanHost, platformGateway);
         if (!gridScan) gridScanHost.dataset.gridScan = 'fallback';
       })
       .catch(() => {
-        if (request === gridScanRequest && location.hash !== '#ios') gridScanHost.dataset.gridScan = 'fallback';
+        if (request === gridScanRequest && !showTutorial) gridScanHost.dataset.gridScan = 'fallback';
       });
   }
   tutorialApp.hidden = !showTutorial;
   tutorialApp.inert = !showTutorial;
-  document.documentElement.dataset.route = showTutorial ? 'ios' : 'platforms';
-  document.title = showTutorial ? 'iPhone 17 Pro · 操作按钮教程' : '选择设备 · 设备操作教程';
+  document.documentElement.dataset.route = showTutorial ? activePlatform : 'platforms';
+  
+  const platformTitle = activePlatform === 'android' ? 'Android · 操作教程' : (activePlatform === 'harmony' ? 'HarmonyOS · 操作教程' : 'iPhone 17 Pro · 操作按钮教程');
+  document.title = showTutorial ? platformTitle : '选择设备 · 设备操作教程';
   document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', showTutorial ? '#000000' : '#07080a');
   if (showTutorial) requestAnimationFrame(measureRailGeometry);
   if (moveFocus) (showTutorial ? (tutorialHeading ?? viewer) : gatewayTitle).focus({ preventScroll: true });

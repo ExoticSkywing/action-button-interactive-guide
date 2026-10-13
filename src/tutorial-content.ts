@@ -172,11 +172,43 @@ export const phase3Steps: TutorialStep[] = [
   }
 ];
 
-export const phases: TutorialPhase[] = [
+export const iosPhases: TutorialPhase[] = [
   { id: 'phase-signout', name: '01 退出旧账户', title: '退出旧账户', steps: phase1Steps },
   { id: 'phase-signin', name: '02 登录新账户', title: '登录新账户', steps: phase2Steps },
   { id: 'phase-download', name: '03 导入订阅链接', title: '导入订阅链接', steps: phase3Steps }
 ];
+
+export const androidPhases: TutorialPhase[] = [
+  { id: 'phase-android-setup', name: '01 客户端配置', title: '客户端配置', steps: [
+    {
+      id: 'android-install',
+      label: '下载安装',
+      title: '下载并安装客户端',
+      body: '下载安装 Android 客户端后打开，准备导入订阅链接',
+      proof: '',
+      hudProof: '',
+      screen: 'settings',
+      icon: icons.railSettings
+    }
+  ]}
+];
+
+export const harmonyPhases: TutorialPhase[] = [
+  { id: 'phase-harmony-setup', name: '01 鸿蒙客户端配置', title: '鸿蒙客户端配置', steps: [
+    {
+      id: 'harmony-install',
+      label: '下载安装',
+      title: '下载并安装鸿蒙客户端',
+      body: '下载安装 HarmonyOS 客户端后打开，准备导入配置',
+      proof: '',
+      hudProof: '',
+      screen: 'settings',
+      icon: icons.railSettings
+    }
+  ]}
+];
+
+export const phases = iosPhases;
 
 const chevron = (direction: 'left' | 'right') => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${direction === 'left' ? 'm14.5 5-7 7 7 7' : 'm9.5 5 7 7-7 7'}"/></svg>`;
 const closeIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>';
