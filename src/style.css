@@ -1565,22 +1565,22 @@
   contain: paint layout;
 }
 
-/* 真实三星 Galaxy S24 专属屏幕视口与小直屏圆角 */
+/* 真实三星 Galaxy S24 Ultra 专属屏幕视口与纯平微圆角 (R=10) */
 .device[data-platform="android"] .device-screen {
-  left: 4.96%;
-  top: 5.69%;
-  width: 89.41%;
-  height: 91.63%;
-  border-radius: 4.8%/2.3%;
+  left: 5.41%;
+  top: 3.30%;
+  width: 88.96%;
+  height: 93.26%;
+  border-radius: 1.2%/0.6%;
 }
 
-/* 真实华为 Pura 70 专属屏幕视口与微弧直屏圆角 */
+/* 真实华为 Pura 70 专属屏幕视口与直屏圆角 */
 .device[data-platform="harmony"] .device-screen {
   left: 6.74%;
-  top: 5.91%;
-  width: 85.41%;
-  height: 91.45%;
-  border-radius: 6.2%/3.0%;
+  top: 3.37%;
+  width: 85.63%;
+  height: 93.12%;
+  border-radius: 8.8%/4.2%;
 }
 
 .device-screen > .phone-ui {
