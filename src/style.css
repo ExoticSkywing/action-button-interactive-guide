@@ -1576,10 +1576,10 @@
 
 /* 真实华为 Pura 70 专属屏幕视口与直屏圆角 */
 .device[data-platform="harmony"] .device-screen {
-  left: 6.74%;
-  top: 3.37%;
-  width: 85.63%;
-  height: 93.12%;
+  left: 6.67%;
+  top: 3.19%;
+  width: 85.04%;
+  height: 93.08%;
   border-radius: 8.8%/4.2%;
 }
 
