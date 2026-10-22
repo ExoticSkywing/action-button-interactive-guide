@@ -972,6 +972,9 @@ paddlePrev?.addEventListener('click', () => {
   }
 });
 document.querySelector<HTMLButtonElement>('[data-restart]')?.addEventListener('click', () => {
+  localStorage.removeItem(touchLearnedKey);
+  localStorage.removeItem(wheelLearnedKey);
+  railLearned = false;
   cancelStepMotion();
   resetRailDrag(false);
   currentPhase = 0;
@@ -982,6 +985,7 @@ document.querySelector<HTMLButtonElement>('[data-restart]')?.addEventListener('c
   signoutCompleted = false;
   saveProgress();
   syncRailTrack();
+  syncRailCoachmark();
   renderStep(0, false);
   status.textContent = '已重新开始第一阶段：退出旧账户，第 1 步。';
 });
@@ -1084,8 +1088,11 @@ function parseAndApplyUrlTarget() {
       hashParams.forEach((val, key) => rawParams.set(key, val));
     }
 
-    // 1. 如果带有 reset=1 或 restart=1，直接全局重置到第一阶段第 1 步
+    // 1. 如果带有 reset=1 或 restart=1，直接全局重置到第一阶段第 1 步并清空教学已学状态
     if (rawParams.get('reset') === '1' || rawParams.get('restart') === '1') {
+      localStorage.removeItem(touchLearnedKey);
+      localStorage.removeItem(wheelLearnedKey);
+      railLearned = false;
       cancelStepMotion();
       resetRailDrag(false);
       currentPhase = 0;
@@ -1096,6 +1103,7 @@ function parseAndApplyUrlTarget() {
       signoutCompleted = false;
       saveProgress();
       syncRailTrack();
+      syncRailCoachmark();
       renderStep(0, false);
       return;
     }
