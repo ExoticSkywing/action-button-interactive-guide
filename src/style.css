@@ -1847,3 +1847,73 @@
 .hud-step-enter-down {
   animation: hud-step-spring-down 280ms cubic-bezier(0.2, 0.8, 0.25, 1) both !important;
 }
+/* 纯正 neat-annotations 手绘批注（左向指向箭头 ann-e 与左上指向 ann-se / ann-w） */
+.ann-e::before{left:calc(100% + var(--ann-target-gap) - 4px + var(--ann-arrow-x));top:calc(50% - 19px + var(--ann-arrow-y));transform:scaleX(-1);--_ann-arrow-mask:url("data:image/svg+xml,%3Csvg width='46' height='38' viewBox='0 0 46 38' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 19 C30 18 18 19 6 19' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16 11 L6 19 L16 27' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ann-e::after{left:calc(100% + var(--ann-target-gap) + 40px + var(--ann-label-gap) + var(--ann-text-x));top:calc(50% + var(--ann-text-y));transform:translateY(-50%) rotate(var(--ann-rotate))}
+
+.ann-w::before{right:calc(100% + var(--ann-target-gap) - 4px - var(--ann-arrow-x));top:calc(50% - 19px + var(--ann-arrow-y));--_ann-arrow-mask:url("data:image/svg+xml,%3Csvg width='46' height='38' viewBox='0 0 46 38' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 19 C30 18 18 19 6 19' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3Cpath d='M16 11 L6 19 L16 27' fill='none' stroke='black' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.ann-w::after{right:calc(100% + var(--ann-target-gap) + 40px + var(--ann-label-gap) - var(--ann-text-x));top:calc(50% + var(--ann-text-y));transform:translateY(-50%) rotate(var(--ann-rotate))}
+/* ==========================================================================
+   手绘自然批注：指示左侧手势演示（遵循 neat-annotations 纯正手感，拒绝塑料胶囊）
+   ========================================================================== */
+.rail-cue-annotation {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  --ann-color: rgba(255, 255, 255, 0.92);
+  --ann-mark: transparent;
+  --ann-font: "Shantell Sans", "Caveat", "PingFang SC", cursive, sans-serif;
+  --ann-target-gap: 8px;
+  --ann-label-gap: 6px;
+  --ann-label-max-width: 120px;
+  --ann-arrow-x: 0px;
+  --ann-text-x: 0px;
+  --ann-arrow-y: 0px;
+  --ann-text-y: 0px;
+  --ann-rotate: -3deg;
+}
+
+.rail-cue-annotation::after {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em !important;
+  color: #fff !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9), 0 0 12px rgba(41, 151, 255, 0.35) !important;
+  white-space: nowrap !important;
+}
+
+.rail-cue-annotation.ann-w::before {
+  right: calc(100% + var(--ann-target-gap) + 2px);
+  top: calc(50% - 19px);
+  --_ann-arrow-mask: url("data:image/svg+xml,%3Csvg width='46' height='38' viewBox='0 0 46 38' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M40 19 C30 18 18 19 6 19' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M16 11 L6 19 L16 27' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+}
+
+.rail-cue-annotation.ann-w::after {
+  right: calc(100% + var(--ann-target-gap) + 48px);
+  top: 50%;
+  transform: translateY(-50%) rotate(var(--ann-rotate));
+}
+
+@media(max-width: 600px) {
+  /* 移动端由于屏幕靠左，手势手腕位于左侧，手绘文字与微弧线自然放置于手指上方负空间 */
+  .rail-cue-annotation {
+    left: 20px;
+    top: -12px;
+  }
+  .rail-cue-annotation.ann-w::before {
+    display: none; /* 移动端靠左纯净排版，由精致手写字直接指示，不叠突兀硬箭头 */
+  }
+  .rail-cue-annotation.ann-w::after {
+    right: auto;
+    left: -4px;
+    top: -18px;
+    transform: rotate(-2deg);
+    font-size: 13px !important;
+    color: #e5f2ff !important;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 14px rgba(41, 151, 255, 0.5) !important;
+  }
+}

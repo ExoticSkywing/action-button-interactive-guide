@@ -84,6 +84,7 @@ root.innerHTML = `
                   </g>
                 </g>
               </svg>
+              <div class="rail-cue-annotation ann ann-w ann-no-mark" data-note="上下滑动切步骤" aria-hidden="true"></div>
             </div>
             <div class="wheel-gesture-demo" aria-hidden="true">
               <svg viewBox="0 0 48 58">
@@ -92,6 +93,7 @@ root.innerHTML = `
                 <rect class="mouse-wheel" x="21.5" y="11" width="5" height="10" rx="2.5"/>
                 <path class="wheel-cues" d="m24 1-3 3m3-3 3 3m-3 52-3-3m3 3 3-3"/>
               </svg>
+              <div class="rail-cue-annotation ann ann-w ann-no-mark" data-note="滚动滚轮切步骤" aria-hidden="true"></div>
             </div>
             <span class="sr-only" data-gesture-copy></span>
           </div>
