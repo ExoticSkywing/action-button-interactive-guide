@@ -1,0 +1,88 @@
+/**
+ * Typebot 客服/答疑小部件按需优雅加载模块
+ * 
+ * 性能与架构原则：
+ * 1. 绝不阻塞首屏主线程与关键渲染路径（LCP/FCP 零影响）；
+ * 2. 仅在首页网关（设备选择页）展示，避免在深度教程沉浸交互中干扰用户操作；
+ * 3. 采用 requestIdleCallback / 用户轻微交互或轻度延时懒加载外部 CDN 脚本；
+ * 4. 路由切换到教程模式时自动隐藏，返回首页网关时自动恢复。
+ */
+
+let typebotInitialized = false;
+let typebotLoadingPromise: Promise<void> | null = null;
+let currentIsGateway = true;
+
+export function loadTypebot(): Promise<void> {
+  if (typebotInitialized) return Promise.resolve();
+  if (typebotLoadingPromise) return typebotLoadingPromise;
+
+  typebotLoadingPromise = (async () => {
+    try {
+      // 动态引入外部 ESM 模块
+      // @ts-ignore
+      const { default: Typebot } = await import('https://cdn.jsdelivr.net/npm/@typebot.io/js@0/dist/web.js');
+      
+      Typebot.initBubble({
+        typebot: "my-typebot-cqixji2",
+        apiHost: "https://kefu.1yo.cc",
+        previewMessage: { 
+          message: "有什么可以帮您？",
+          autoShowDelay: 1000
+        },
+        theme: {
+          button: { backgroundColor: "#9B74B7" },
+          chatWindow: { backgroundColor: "#F8F8F8" },
+        },
+      });
+      typebotInitialized = true;
+
+      // 监听或微等待组件挂载后，立即应用当前的显隐规则
+      setTimeout(() => {
+        syncTypebotVisibility(true, currentIsGateway);
+      }, 50);
+    } catch (err) {
+      console.warn('Typebot failed to load:', err);
+    }
+  })();
+
+  return typebotLoadingPromise;
+}
+
+/**
+ * 在空闲时或首次用户交互时智能预热加载
+ */
+export function scheduleTypebotWarmup() {
+  const triggerLoad = () => {
+    window.removeEventListener('pointerdown', triggerLoad);
+    window.removeEventListener('scroll', triggerLoad);
+    window.removeEventListener('keydown', triggerLoad);
+    void loadTypebot();
+  };
+
+  window.addEventListener('pointerdown', triggerLoad, { once: true, passive: true });
+  window.addEventListener('scroll', triggerLoad, { once: true, passive: true });
+  window.addEventListener('keydown', triggerLoad, { once: true, passive: true });
+
+  // 首页优先：2秒后若空闲自动预热
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(() => {
+      setTimeout(triggerLoad, 2000);
+    }, { timeout: 3500 });
+  } else {
+    setTimeout(triggerLoad, 2000);
+  }
+}
+
+/**
+ * 根据当前是否展示首页网关，同步 Typebot 的显隐状态
+ */
+export function syncTypebotVisibility(showOnGatewayOnly: boolean, isGateway: boolean) {
+  currentIsGateway = isGateway;
+  const bubble = document.querySelector('typebot-bubble') as HTMLElement | null;
+  if (!bubble) return;
+  if (showOnGatewayOnly && !isGateway) {
+    bubble.style.display = 'none';
+  } else {
+    bubble.style.display = '';
+  }
+}

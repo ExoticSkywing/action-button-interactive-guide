@@ -4,6 +4,7 @@ import { triggerConfetti } from './confetti';
 import { metalDuration, metalFrames } from './metal-motion';
 import type { GridScanController } from './grid-scan';
 import { renderPlatformGateway } from './platform-navigation';
+import { scheduleTypebotWarmup, syncTypebotVisibility } from './typebot-widget';
 
 type PlatformId = 'ios' | 'android' | 'harmony';
 
@@ -1287,6 +1288,7 @@ function syncRoute(moveFocus = false) {
   const platformTitle = activePlatform === 'android' ? 'Android · 操作教程' : (activePlatform === 'harmony' ? 'HarmonyOS · 操作教程' : 'iPhone 17 Pro · 操作按钮教程');
   document.title = showTutorial ? platformTitle : '选择设备 · 设备操作教程';
   document.querySelector<HTMLMetaElement>('meta[name="theme-color"]')?.setAttribute('content', showTutorial ? '#000000' : '#07080a');
+  syncTypebotVisibility(true, !showTutorial);
   if (showTutorial) requestAnimationFrame(measureRailGeometry);
   if (moveFocus) (showTutorial ? (tutorialHeading ?? viewer) : gatewayTitle).focus({ preventScroll: true });
 }
@@ -1298,6 +1300,7 @@ syncRoute();
 syncRailTrack();
 renderStep(currentStepInPhase, false);
 warmAdjacentScreens();
+scheduleTypebotWarmup();
 
 new ResizeObserver(() => requestAnimationFrame(measureRailGeometry)).observe(railViewport);
 requestAnimationFrame(measureRailGeometry);
