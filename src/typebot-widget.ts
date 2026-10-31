@@ -24,9 +24,19 @@ export function loadTypebot(): Promise<void> {
       Typebot.initBubble({
         typebot: "my-typebot-cqixji2",
         apiHost: "https://kefu.1yo.cc",
+        previewMessage: { 
+          message: "I have a question for you!",
+          autoShowDelay: 1000,
+        },
         theme: {
           button: { backgroundColor: "#9B74B7" },
           chatWindow: { backgroundColor: "#F8F8F8" },
+          previewMessage: {
+            backgroundColor: "#FFFFFF",
+            textColor: "#1D1D1F",
+            closeButtonBackgroundColor: "rgba(0, 0, 0, 0.06)",
+            closeButtonIconColor: "#6E6E73",
+          },
         },
       });
       typebotInitialized = true;
