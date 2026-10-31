@@ -1917,3 +1917,18 @@
     text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95), 0 0 14px rgba(41, 151, 255, 0.5) !important;
   }
 }
+/* Typebot 客服浮动小部件全站层级与移动端安全避让 */
+typebot-bubble {
+  position: fixed !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
+
+@media (max-width: 600px) {
+  /* 移动端避让底部的画廊操作卡片 Dock，在主容器和根元素上设置安全底边距 */
+  typebot-bubble {
+    --container-bottom: 96px !important;
+  }
+}
+
+
